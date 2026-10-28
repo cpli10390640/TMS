@@ -402,7 +402,10 @@ function canMove(u,c,to){
     if(from==='todo')return {ok:false,why:`คุณลากจาก To Do ได้เฉพาะเลน ${LANE_NAME[own]}`};
     if(from===own&&to==='review')return {ok:true};
     if(['en','cn','other'].includes(from)&&to==='review')return {ok:false,why:'ลากไป Review ได้เฉพาะการ์ดในเลนภาษาของคุณ'};
-    if(from==='correction'&&to==='review')return {ok:true};
+    if(from==='correction'&&to==='review'){
+      if(!cardFitsLang(c,u.lang))return {ok:false,why:`การ์ดนี้ไม่ใช่ภาษา ${u.lang} ลากไม่ได้`};
+      return {ok:true};
+    }
     return {ok:false,why:'Translator ลากได้: To Do → เลนภาษาตัวเอง, ภาษา → Review, Correction → Review'};
   }
   if(from==='review'&&to==='correction'&&(u.role==='Reporter'||isEval(u,c)))return {ok:true};
@@ -481,7 +484,7 @@ function filterBar(f,keys,prefix){
 }
 function cardFace(c,u){
   const late=c.deadline&&c.lane!=='done'&&new Date(c.deadline)<Date.now();
-  const drag=['done'].includes(c.lane)&&!isAdmin(u)?'false':'true';
+  const drag=(['done'].includes(c.lane)&&!isAdmin(u))||(u.role==='Translator'&&!cardFitsLang(c,u.lang))?'false':'true';
   return `<button type="button" class="card" draggable="${drag}" data-card="${esc(c.id)}">
     <span class="cid mono">${esc(c.id)}</span>
     <span class="ttl">${esc(c.title)}</span>
@@ -498,7 +501,7 @@ function viewBoard(){
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="demo-note">Prototype · ข้อมูลสมมุติ</span><button class="btn primary" type="button" id="addCard">+ Add Card</button></div></div>
     ${filterBar(ui.f,['k','lang','sec','pri','asg','st','type','lane','rev','ev'],'bf')}
     <div class="board-scroll"><div class="board">${lanes}</div></div>
-    <p class="rules"><b>Drag Rules:</b> Reporter ลากได้แค่ Review → Correction · Translator ลาก To Do → เลนภาษาตัวเอง (เฉพาะการ์ด Ready), ภาษา → Review, Correction → Review · Evaluator ลาก Review → Correction และกด "ส่งประเมิน" เพื่อเข้า Assessment · Assessment ไป Done อัตโนมัติเมื่อ Submit แบบประเมิน · Done ลากกลับได้เฉพาะ Admin</p>`;
+    <p class="rules"><b>Drag Rules:</b> Reporter ลากได้แค่ Review → Correction · Translator ลากได้เฉพาะการ์ดที่ตรงภาษาตัวเองเท่านั้น: To Do → เลนภาษาตัวเอง (เฉพาะการ์ด Ready), ภาษา → Review, Correction → Review (เฉพาะการ์ดภาษาตัวเอง) · Evaluator ลาก Review → Correction และกด "ส่งประเมิน" เพื่อเข้า Assessment · Assessment ไป Done อัตโนมัติเมื่อ Submit แบบประเมิน · Done ลากกลับได้เฉพาะ Admin</p>`;
 }
 
 /* ================= Notifications ================= */
