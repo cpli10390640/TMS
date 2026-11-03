@@ -378,7 +378,7 @@ const userBy=n=>S.users.find(u=>u.name===n);
 const cardBy=id=>S.cards.find(c=>c.id===id);
 const translators=()=>S.users.filter(u=>u.role==='Translator'&&u.active);
 const isAdmin=u=>u.role==='Admin';
-const isEval=(u,c)=>isAdmin(u)||c.evaluator===u.name;
+const isEval=(u,c)=>isAdmin(u)||c.evaluator===u.name||c.reporter===u.name;
 function roleLabel(u){return u.role==='Translator'?`Translator · ${u.lang}`:u.role}
 function langLaneOf(u){return LANG_LANE[u.lang]}
 function cardFitsLang(c,lang){if(lang==='Other')return c.languages.some(l=>l==='VN'||l==='Other');return c.languages.includes(lang)}
@@ -412,7 +412,13 @@ function canMove(u,c,to){
   if(u.role==='Reporter')return {ok:false,why:'Reporter ลากได้เฉพาะ Review → Correction'};
   return {ok:false,why:'ไม่มีสิทธิ์ย้ายการ์ดนี้'};
 }
-function canEdit(u,c){if(c.status==='Cancel'||c.lane==='done')return isAdmin(u);if(isAdmin(u)||u.role==='Reporter')return true;return cardFitsLang(c,u.lang)}
+function canEdit(u,c){
+  if(c.status==='Cancel'||['done','review','assessment'].includes(c.lane))return isAdmin(u);
+  if(isAdmin(u))return true;
+  if(u.role==='Reporter')return true;
+  if(u.role==='Translator')return cardFitsLang(c,u.lang);
+  return false;
+}
 
 /* ================= Mutations ================= */
 function log(action,target){S.audit.unshift({date:nowISO(),user:S.me,action,target})}
@@ -497,7 +503,7 @@ function viewBoard(){
   const lanes=LANES.map(l=>{const cs=list.filter(c=>c.lane===l.id);return `<section class="lane" data-lane="${l.id}" aria-label="${l.name}">
     <div class="lane-h"><div>${l.name}<small>${l.who}</small></div><span class="cnt">${cs.length}</span></div>
     <div class="lane-body">${cs.map(c=>cardFace(c,u)).join('')||'<div class="lane-empty">ไม่มีการ์ด</div>'}${l.id==='done'?'<div class="lane-empty">การ์ดโชว์ใน Board 30 วัน<br>หลังจากนั้นค้นหาได้ใน All Cards</div>':''}</div></section>`}).join('');
-  return `<div class="topbar"><div><h1>Board</h1><div class="sub">ล็อกอินเป็น ${esc(u.name)} (${esc(roleLabel(u))}) — ลากการ์ดเพื่อย้ายเลน หรือเปิดการ์ดแล้วใช้เมนู "ย้ายไป"</div></div>
+  return `<div class="topbar"><div><h1>Board</h1><div class="sub">ล็อกอินเป็น ${esc(u.name)} (${esc(roleLabel(u))}) — ลากการ์ดเพื่อย้ายเลน</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="demo-note">Prototype · ข้อมูลสมมุติ</span><button class="btn primary" type="button" id="addCard">+ Add Card</button></div></div>
     ${filterBar(ui.f,['k','lang','sec','pri','asg','st','type','lane','rev','ev'],'bf')}
     <div class="board-scroll"><div class="board">${lanes}</div></div>
@@ -606,13 +612,11 @@ function cardHtml(c){
   const u=me();const tabs=[['info','Status & Assignment info'],['assess','Assessment Link'],['hist','Status History']];
   let body='';
   if(cardTab==='info'){
-    const allowed=LANES.filter(l=>canMove(u,c,l.id).ok);
     const acts=[];
     if(c.status==='TBC'&&(isAdmin(u)||c.reporter===u.name))acts.push('<button class="btn primary sm" type="button" data-act="ready">เปลี่ยน TBC → Ready</button>');
     if(c.lane==='review'&&c.status!=='Cancel'&&isEval(u,c))acts.push('<button class="btn primary sm" type="button" data-act="assess">ส่งประเมิน (Review → Assessment)</button>');
-    if(allowed.length)acts.push(`<label class="hint" for="moveTo">ย้ายไป</label><select id="moveTo"><option value="">เลือกเลน</option>${allowed.map(l=>`<option value="${l.id}">${l.name}</option>`).join('')}</select><button class="btn sm" type="button" data-act="move">ย้าย</button>`);
     if(canEdit(u,c)&&c.status!=='Cancel')acts.push('<button class="btn sm" type="button" data-act="edit">แก้ไขการ์ด</button>');
-    if(c.status!=='Cancel'&&c.lane!=='done')acts.push('<button class="btn sm danger" type="button" data-act="cancel">Cancel การ์ด</button>');
+    if(c.status!=='Cancel'&&!['done','review','assessment'].includes(c.lane)&&(isAdmin(u)||u.role==='Reporter'||(u.role==='Translator'&&cardFitsLang(c,u.lang))))acts.push('<button class="btn sm danger" type="button" data-act="cancel">Cancel การ์ด</button>');
     if(isAdmin(u))acts.push('<button class="btn sm danger" type="button" data-act="delete">ลบการ์ด</button>');
     const dur=c.readyAt&&c.deadline?Math.max(0,Math.round((new Date(c.deadline)-new Date(c.readyAt))/DAY))+' วัน':'-';
     const link=safeUrl(c.link);
@@ -659,7 +663,6 @@ function bindCard(c){
     const a=b.dataset.act;const inl=$('#inline');
     if(a==='ready'){toReady(c);re()}
     else if(a==='assess'){toAssessment(c);cardTab='assess';re()}
-    else if(a==='move'){const to=$('#moveTo').value;if(!to){toast('เลือกเลนที่จะย้ายก่อน',true);return}if(moveCard(c,to))re()}
     else if(a==='edit'){openForm(c)}
     else if(a==='comment'){const t=$('#cmt').value.trim();if(!t){toast('พิมพ์ข้อความก่อนส่ง',true);return}addComment(c,t);re()}
     else if(a==='cancel'){inl.innerHTML=`<div class="actions" style="display:grid;gap:8px"><label for="cReason"><b>เหตุผลที่ Cancel</b> <span class="req">*</span></label><textarea id="cReason" class="f-input" rows="2" maxlength="300"></textarea><div style="display:flex;gap:8px"><button class="btn danger sm" type="button" id="cOk">ยืนยัน Cancel</button><button class="btn sm" type="button" id="cNo">ไม่ Cancel</button></div></div>`;$('#cReason').focus();
@@ -673,10 +676,20 @@ function bindCard(c){
     submitAssessment(c,{score:+sc.value,timing:tm.value,suggest:sg});re()};
 }
 
+function trByLangs(langs){
+  if(!langs||!langs.length)return translators();
+  return translators().filter(u=>{
+    if(u.lang==='Other')return langs.some(l=>l==='VN'||l==='Other');
+    return langs.includes(u.lang);
+  });
+}
+
 function openForm(c){
   const u=me();const isNew=!c;const nextId='TMS-'+String(S.seq+1).padStart(5,'0');
   const v=c||{id:nextId,title:'',status:'TBC',languages:[],type:'Document Translation',reporter:u.name,section:u.section[0]||'FLP',reporterEmail:u.email,assignee:'',collaborators:[],evaluator:u.role==='Translator'?'':u.name,note:'',priority:'Normal',deadline:'',link:''};
-  const tr=translators().map(x=>x.name);const evals=S.users.filter(x=>x.role!=='Translator'&&x.active).map(x=>x.name);
+  const evals=S.users.filter(x=>x.role!=='Translator'&&x.active).map(x=>x.name);
+  const initTr=trByLangs(v.languages);
+  const asgOpts=()=>initTr;
   openModal(head(v.id,isNew?'New Card':'แก้ไขการ์ด')+`<div class="m-body"><form id="cardForm" class="form" novalidate>
     <label class="l">id Card</label><input type="text" readonly value="${esc(v.id)}" class="mono">
     <label class="l" for="fTitle">Title <span class="req">*</span></label><input type="text" id="fTitle" maxlength="150" value="${esc(v.title)}"><span class="err" id="eTitle"></span>
@@ -686,8 +699,8 @@ function openForm(c){
     <label class="l">Reporter Name</label><input type="text" readonly value="${esc(v.reporter)}">
     <label class="l" for="fSec">Reporter Section <span class="req">*</span></label><select id="fSec">${opt(SECTIONS,v.section)}</select>
     <label class="l">Reporter Email</label><input type="text" readonly value="${esc(v.reporterEmail)}">
-    <label class="l" for="fAsg">Assignee</label><select id="fAsg">${opt(tr,v.assignee,'— ยังไม่ระบุ —')}</select>
-    <label class="l">Collaborator</label><div class="checks">${tr.map(n=>`<label><input type="checkbox" name="collab" value="${esc(n)}" ${v.collaborators.includes(n)?'checked':''}> ${esc(n)}</label>`).join('')}</div>
+    <label class="l" for="fAsg">Assignee</label><select id="fAsg">${opt(initTr.map(x=>x.name),v.assignee,'— ยังไม่ระบุ —')}</select>
+    <label class="l" for="fCollab">Collaborator</label><select id="fCollab" multiple size="4" style="min-height:80px">${initTr.map(x=>`<option value="${esc(x.name)}"${v.collaborators.includes(x.name)?' selected':''}>${esc(x.name)}</option>`).join('')}</select>
     <label class="l" for="fEval">Evaluator <span class="req">*</span></label><select id="fEval">${opt(evals,v.evaluator,'— เลือก —')}</select><span class="err" id="eEval"></span>
     <label class="l" for="fNote">Note</label><textarea id="fNote" rows="2" maxlength="500">${esc(v.note)}</textarea>
     <label class="l" for="fPri">Priority <span class="req">*</span></label><select id="fPri">${opt(PRIORITIES,v.priority)}</select>
@@ -695,13 +708,25 @@ function openForm(c){
     <label class="l" for="fLink">SharePoint Link</label><input type="url" id="fLink" maxlength="500" placeholder="https://..." value="${esc(v.link)}"><span class="err" id="eLink"></span>
     <span></span><div class="m-foot" style="margin:0"><button class="btn" type="button" data-close>ยกเลิก</button><button class="btn primary" type="submit">Save</button></div>
   </form></div>`);
+  /* bind language checkboxes → filter Assignee + Collaborator */
+  document.querySelectorAll('input[name=lang]').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      const langs=[...document.querySelectorAll('input[name=lang]:checked')].map(x=>x.value);
+      const filtered=trByLangs(langs);
+      const g=id=>document.getElementById(id);
+      const curAsg=g('fAsg').value;
+      g('fAsg').innerHTML=`<option value="">— ยังไม่ระบุ —</option>`+filtered.map(x=>`<option value="${esc(x.name)}"${x.name===curAsg?' selected':''}>${esc(x.name)}</option>`).join('');
+      const curCollab=[...g('fCollab').selectedOptions].map(x=>x.value);
+      g('fCollab').innerHTML=filtered.map(x=>`<option value="${esc(x.name)}"${curCollab.includes(x.name)?' selected':''}>${esc(x.name)}</option>`).join('');
+    });
+  });
   $('#cardForm').onsubmit=e=>{e.preventDefault();
     const g=id=>document.getElementById(id);['eTitle','eLang','eEval','eDl','eLink'].forEach(i=>g(i).textContent='');
     const title=g('fTitle').value.trim(),langs=[...document.querySelectorAll('input[name=lang]:checked')].map(x=>x.value),ev=g('fEval').value,dl=g('fDl').value,link=g('fLink').value.trim();
     let ok=true;if(!title){g('eTitle').textContent='กรอกชื่องาน';ok=false}if(!langs.length){g('eLang').textContent='เลือกอย่างน้อย 1 ภาษา';ok=false}if(!ev){g('eEval').textContent='เลือก Evaluator';ok=false}if(!dl){g('eDl').textContent='ระบุ Deadline';ok=false}
     if(link&&!safeUrl(link)){g('eLink').textContent='ลิงก์ต้องขึ้นต้นด้วย https://';ok=false}
     if(!ok)return;
-    const data={title,languages:langs,type:g('fType').value,section:g('fSec').value,assignee:g('fAsg').value,collaborators:[...document.querySelectorAll('input[name=collab]:checked')].map(x=>x.value).filter(n=>n!==g('fAsg').value),evaluator:ev,note:g('fNote').value.trim(),priority:g('fPri').value,deadline:new Date(dl+'T17:00:00').toISOString(),link};
+    const data={title,languages:langs,type:g('fType').value,section:g('fSec').value,assignee:g('fAsg').value,collaborators:[...g('fCollab').selectedOptions].map(x=>x.value).filter(n=>n!==g('fAsg').value),evaluator:ev,note:g('fNote').value.trim(),priority:g('fPri').value,deadline:new Date(dl+'T17:00:00').toISOString(),link};
     if(isNew){const st=g('fStatus').value;S.seq++;const nc=Object.assign({id:nextId,lane:'todo',status:st,reporter:u.name,reporterEmail:u.email,createdAt:nowISO(),readyAt:st==='Ready'?nowISO():'',updatedAt:nowISO(),doneAt:'',revision:0,history:[],comments:[],assessment:null,assessLink:'',cancelReason:''},data);
       S.cards.push(nc);hist(nc,`สร้างการ์ด (${st})`);log('สร้างการ์ด',nc.id);notify(team(nc),st==='Ready'?'งานใหม่ถูก assign ให้คุณแล้ว — ไฟล์พร้อมแปล':'งานใหม่ถูก assign ให้คุณแล้ว',nc.id);save();toast(`สร้าง ${nc.id} แล้ว`);closeModal()}
     else{Object.assign(c,data);hist(c,'แก้ไขรายละเอียดการ์ด');log('แก้ไขการ์ด',c.id);save();toast('บันทึกแล้ว');openCard(c.id)}
