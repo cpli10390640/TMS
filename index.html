@@ -727,9 +727,12 @@ function openForm(c){
   </form></div>`);
   /* ── Custom Dropdown state ── */
   let collabSelected=[...v.collaborators];
+  function currentAsg(){return (document.getElementById('fAsg')||{}).value||''}
   function buildCollabPanel(people){
     const panel=document.getElementById('fCollabPanel');if(!panel)return;
-    panel.innerHTML=people.map(x=>`<div class="dd-item"><input type="checkbox" id="fcc-${esc(x.name)}" value="${esc(x.name)}"${collabSelected.includes(x.name)?' checked':''}><label for="fcc-${esc(x.name)}">${esc(x.name)}</label><span class="lang-badge">${esc(x.lang)}</span></div>`).join('');
+    const asg=currentAsg();
+    const list=people.filter(x=>x.name!==asg);
+    panel.innerHTML=list.length?list.map(x=>`<div class="dd-item"><input type="checkbox" id="fcc-${esc(x.name)}" value="${esc(x.name)}"${collabSelected.includes(x.name)?' checked':''}><label for="fcc-${esc(x.name)}">${esc(x.name)}</label><span class="lang-badge">${esc(x.lang)}</span></div>`).join(''):'<div style="padding:10px 14px;font-size:13px;color:var(--muted)">ไม่มีรายชื่อ</div>';
     panel.querySelectorAll('input').forEach(cb=>cb.addEventListener('change',()=>{collabSelected=[...panel.querySelectorAll('input:checked')].map(i=>i.value);updateCollabLabel()}));
   }
   function updateCollabLabel(){
@@ -740,8 +743,15 @@ function openForm(c){
   }
   const collabBtn=document.getElementById('fCollabBtn');
   const collabPanel=document.getElementById('fCollabPanel');
-  collabBtn.addEventListener('click',e=>{e.stopPropagation();const open=collabPanel.classList.toggle('open');collabBtn.classList.toggle('open',open);if(open)buildCollabPanel(trByLangs([...document.querySelectorAll('input[name=lang]:checked')].map(x=>x.value)))});
+  function currentLangPeople(){return trByLangs([...document.querySelectorAll('input[name=lang]:checked')].map(x=>x.value))}
+  collabBtn.addEventListener('click',e=>{e.stopPropagation();const open=collabPanel.classList.toggle('open');collabBtn.classList.toggle('open',open);if(open)buildCollabPanel(currentLangPeople())});
   document.addEventListener('click',function closeCollab(e){if(!document.getElementById('fCollabWrap')?.contains(e.target)){collabPanel.classList.remove('open');collabBtn.classList.remove('open')}});
+  /* เมื่อ Assignee เปลี่ยน → ล้างชื่อนั้นออกจาก collabSelected + rebuild panel */
+  document.getElementById('fAsg').addEventListener('change',()=>{
+    collabSelected=collabSelected.filter(n=>n!==currentAsg());
+    if(collabPanel.classList.contains('open'))buildCollabPanel(currentLangPeople());
+    updateCollabLabel();
+  });
   updateCollabLabel();
   /* bind language checkboxes → filter Assignee + Collaborator dropdown */
   document.querySelectorAll('input[name=lang]').forEach(cb=>{
