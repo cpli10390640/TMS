@@ -417,6 +417,7 @@ function canMove(u,c,to){
   if(from==='assessment'&&to==='done')return {ok:false,why:'การ์ดจะไป Done อัตโนมัติเมื่อ Evaluator กด Submit แบบประเมิน'};
   if(isAdmin(u))return {ok:true};
   if(from==='done')return {ok:false,why:'การ์ดที่ Done แล้วลากกลับได้เฉพาะ Admin'};
+  if(from==='review'&&to==='correction'&&(c.reporter===u.name||isEval(u,c)))return {ok:true};
   if(u.role==='Translator'){
     const own=langLaneOf(u);
     if(from==='todo'&&to===own){
@@ -433,7 +434,6 @@ function canMove(u,c,to){
     }
     return {ok:false,why:'Translator ลากได้: To Do → เลนภาษาตัวเอง, ภาษา → Review, Correction → Review'};
   }
-  if(from==='review'&&to==='correction'&&((u.role==='Reporter'&&c.reporter===u.name)||isEval(u,c)))return {ok:true};
   if(u.role==='Reporter')return {ok:false,why:'Reporter ลากได้เฉพาะ Review → Correction และเฉพาะการ์ดที่ตัวเองสร้าง'};
   return {ok:false,why:'ไม่มีสิทธิ์ย้ายการ์ดนี้'};
 }
@@ -515,7 +515,8 @@ function filterBar(f,keys,prefix){
 }
 function cardFace(c,u){
   const late=c.deadline&&c.lane!=='done'&&new Date(c.deadline)<Date.now();
-  const drag=(['done'].includes(c.lane)&&!isAdmin(u))||(u.role==='Translator'&&!cardFitsLang(c,u.lang))?'false':'true';
+  const isCreatorInReview=c.reporter===u.name&&c.lane==='review';
+  const drag=(!isAdmin(u)&&(['done'].includes(c.lane)||(u.role==='Translator'&&!cardFitsLang(c,u.lang)&&!isCreatorInReview)||(u.role==='Reporter'&&!isCreatorInReview)))?'false':'true';
   return `<button type="button" class="card" draggable="${drag}" data-card="${esc(c.id)}">
     <span class="cid mono">${esc(c.id)}</span>
     <span class="ttl">${esc(c.title)}</span>
