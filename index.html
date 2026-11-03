@@ -229,6 +229,16 @@ svg text{fill:var(--muted);font-family:var(--font)}
 .dd-item input{accent-color:var(--primary);width:15px;height:15px;flex:none;cursor:pointer}
 .dd-item label{font-size:13px;cursor:pointer;flex:1}
 .lang-badge{font-size:11px;font-family:var(--mono);background:var(--line-2);color:var(--muted);padding:0 6px;border-radius:4px}
+/* ── @mention Floating Dropdown ── */
+.mw{position:relative;flex:1;min-width:0}
+.men-dd{display:none;position:absolute;z-index:30;background:var(--surface);border:1.5px solid var(--primary);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);width:260px;overflow:hidden;bottom:calc(100% + 6px);left:0}
+.men-dd.show{display:block}
+.men-hd{padding:6px 12px;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--line)}
+.men-mi{display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;transition:background .1s}
+.men-mi:hover,.men-mi.on{background:var(--primary-soft)}
+.men-mi .mn{font-size:13px;font-weight:600;flex:1;min-width:0}
+.men-mi .mr{font-size:11px;color:var(--muted)}
+.men-hi{color:var(--primary)}
 .m-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 .q{margin-bottom:14px}
 .q p{margin:0 0 5px;font-weight:500}
@@ -651,8 +661,8 @@ function cardHtml(c){
       <dt>Revision Round</dt><dd>${c.revision||0}</dd><dt>SharePoint Link</dt><dd>${link?`<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">${esc(link)}</a>`:'-'}</dd>
       <dt>Evaluator</dt><dd>${esc(c.evaluator)}</dd><dt>Reporter Email</dt><dd>${esc(c.reporterEmail)}</dd><dt>Note</dt><dd>${esc(c.note||'-')}</dd></dl></div>
     <div class="sect"><h4>Comment</h4>${c.comments.map(x=>`<div class="comment"><b>${esc(x.user)}</b><span class="when">${ago(x.date)}</span><p>${renderComment(x.text)}</p></div>`).join('')||'<p class="hint">ยังไม่มีคอมเมนต์</p>'}
-      <div class="cbox"><textarea id="cmt" rows="2" maxlength="1000" placeholder="พิมพ์ Comment หรือ @ชื่อ เพื่อ mention"></textarea><button class="btn primary" type="button" data-act="comment">ส่ง</button></div>
-      <p class="hint">mention ได้: ${S.users.filter(x=>x.active).map(x=>'@'+esc(x.name)).join(' ')}</p></div>`;
+      <div class="cbox"><div class="mw"><textarea id="cmt" rows="2" maxlength="1000" style="width:100%" placeholder="พิมพ์ Comment หรือ @ชื่อ เพื่อ mention"></textarea><div class="men-dd" id="cmtDd"><div class="men-hd">mention ผู้ใช้</div><div id="cmtDdList"></div></div></div><button class="btn primary" type="button" data-act="comment">ส่ง</button></div>
+      <p class="hint">พิมพ์ @ แล้วพิมพ์ชื่อ เพื่อ mention · ↑↓ เลือก · Enter ยืนยัน</p></div>`;
   }else if(cardTab==='assess'){
     if(c.assessment){const a=c.assessment;body=`<div class="sect"><h4>ผลการประเมิน</h4><div class="score">${a.score}/5</div><dl class="kv"><dt>ตรงเวลา</dt><dd>${esc(a.timing)}</dd><dt>ข้อเสนอแนะ</dt><dd>${esc(a.suggest||'-')}</dd><dt>ประเมินโดย</dt><dd>${esc(a.by)} · ${fmtDT(a.date)}</dd><dt>ลิงก์ประเมิน</dt><dd class="mono">${esc(c.assessLink)}</dd></dl></div>`}
     else if(c.lane!=='assessment'){body='<p class="hint">กด Tab นี้ได้เมื่อการ์ดอยู่ใน Lane : Assessment</p>'}
@@ -692,8 +702,26 @@ function bindCard(c){
   if(af)af.onsubmit=e=>{e.preventDefault();const sc=af.querySelector('input[name=score]:checked'),tm=af.querySelector('input[name=timing]:checked'),sg=$('#suggest').value.trim();
     if(!sc||!tm||!sg){$('#aErr').textContent='กรุณาตอบข้อ 3, 4 และ 5 ให้ครบ';return}
     submitAssessment(c,{score:+sc.value,timing:tm.value,suggest:sg});re()};
+  bindMentionDropdown('cmt','cmtDd','cmtDdList');
 }
 
+function bindMentionDropdown(taId,ddId,listId){
+  const ta=document.getElementById(taId),dd=document.getElementById(ddId),lst=document.getElementById(listId);
+  if(!ta||!dd||!lst)return;
+  let selIdx=0;
+  function getAt(){const v=ta.value,p=ta.selectionStart,b=v.slice(0,p);const m=b.match(/@([\w฀-๿]*)$/);return m?m[1]:null}
+  function hl(n,q){if(!q)return esc(n);const i=n.toLowerCase().indexOf(q.toLowerCase());if(i<0)return esc(n);return esc(n.slice(0,i))+'<span class="men-hi">'+esc(n.slice(i,i+q.length))+'</span>'+esc(n.slice(i+q.length))}
+  function renderPeople(q){
+    const people=S.users.filter(u=>u.active&&(!q||u.name.toLowerCase().includes(q.toLowerCase())));
+    selIdx=0;
+    lst.innerHTML=people.length?people.map((p,i)=>`<div class="men-mi${i===0?' on':''}" data-mn="${esc(p.name)}">${av(p.name)}<div style="flex:1;min-width:0"><div class="mn">${hl(p.name,q)}</div><div class="mr">${esc(roleLabel(p))}</div></div></div>`).join(''):'<div style="padding:10px 12px;font-size:13px;color:var(--muted)">ไม่พบชื่อ</div>';
+    lst.querySelectorAll('.men-mi').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();insert(el.dataset.mn)}));
+  }
+  function insert(name){const v=ta.value,p=ta.selectionStart,b=v.slice(0,p),a=v.slice(p);const nb=b.replace(/@[\w฀-๿]*$/,'@'+name+' ');ta.value=nb+a;ta.focus();ta.selectionStart=ta.selectionEnd=nb.length;dd.classList.remove('show')}
+  ta.addEventListener('input',()=>{const q=getAt();if(q!==null){renderPeople(q);dd.classList.add('show')}else dd.classList.remove('show')});
+  ta.addEventListener('keydown',e=>{if(!dd.classList.contains('show'))return;const items=lst.querySelectorAll('.men-mi');if(e.key==='ArrowDown'){e.preventDefault();selIdx=Math.min(selIdx+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('on',i===selIdx))}else if(e.key==='ArrowUp'){e.preventDefault();selIdx=Math.max(selIdx-1,0);items.forEach((el,i)=>el.classList.toggle('on',i===selIdx))}else if(e.key==='Enter'){e.preventDefault();const active=lst.querySelector('.men-mi.on');if(active)insert(active.dataset.mn)}else if(e.key==='Escape')dd.classList.remove('show')});
+  document.addEventListener('click',function mClose(e){if(!dd.contains(e.target)&&e.target!==ta)dd.classList.remove('show')});
+}
 function trByLangs(langs){
   if(!langs||!langs.length)return translators();
   return translators().filter(u=>{
