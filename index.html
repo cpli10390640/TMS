@@ -704,14 +704,14 @@ function trByLangs(langs){
 
 function openForm(c){
   const u=me();const isNew=!c;const nextId='TMS-'+String(S.seq+1).padStart(5,'0');
-  const v=c||{id:nextId,title:'',status:'TBC',languages:[],type:'Document Translation',reporter:u.name,section:u.section[0]||'FLP',reporterEmail:u.email,assignee:'',collaborators:[],evaluator:u.role==='Translator'?'':u.name,note:'',priority:'Normal',deadline:'',link:''};
+  const v=c||{id:nextId,title:'',status:'TBC',languages:u.role==='Translator'?[u.lang]:[],type:'Document Translation',reporter:u.name,section:u.section[0]||'FLP',reporterEmail:u.email,assignee:'',collaborators:[],evaluator:u.role==='Translator'?'':u.name,note:'',priority:'Normal',deadline:'',link:''};
   const evals=S.users.filter(x=>x.role!=='Translator'&&x.active).map(x=>x.name);
   const initTr=trByLangs(v.languages);
   openModal(head(v.id,isNew?'New Card':'แก้ไขการ์ด')+`<div class="m-body"><form id="cardForm" class="form" novalidate>
     <label class="l">id Card</label><input type="text" readonly value="${esc(v.id)}" class="mono">
     <label class="l" for="fTitle">Title <span class="req">*</span></label><input type="text" id="fTitle" maxlength="150" value="${esc(v.title)}"><span class="err" id="eTitle"></span>
     <label class="l" for="fStatus">Status <span class="req">*</span></label><select id="fStatus" ${isNew?'':'disabled'}>${opt(isNew?['TBC','Ready']:[v.status],v.status)}</select>
-    <label class="l">Language <span class="req">*</span></label><div class="checks">${LANGS.map(l=>`<label><input type="checkbox" name="lang" value="${l.v}" ${v.languages.includes(l.v)?'checked':''}> ${l.t}</label>`).join('')}</div><span class="err" id="eLang"></span>
+    <label class="l">Language <span class="req">*</span></label><div class="checks">${LANGS.map(l=>`<label><input type="checkbox" name="lang" value="${l.v}" ${v.languages.includes(l.v)?'checked':''}${isNew&&u.role==='Translator'&&l.v!==u.lang?' disabled':''}> ${l.t}</label>`).join('')}</div><span class="err" id="eLang"></span>
     <label class="l" for="fType">Type <span class="req">*</span></label><select id="fType">${opt(TYPES,v.type)}</select>
     <label class="l">Reporter Name</label><input type="text" readonly value="${esc(v.reporter)}">
     <label class="l" for="fSec">Reporter Section <span class="req">*</span></label><select id="fSec">${opt(SECTIONS,v.section)}</select>
