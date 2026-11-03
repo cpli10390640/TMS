@@ -529,7 +529,7 @@ function viewBoard(){
   const lanes=LANES.map(l=>{const cs=list.filter(c=>c.lane===l.id);return `<section class="lane" data-lane="${l.id}" aria-label="${l.name}">
     <div class="lane-h"><div>${l.name}<small>${l.who}</small></div><span class="cnt">${cs.length}</span></div>
     <div class="lane-body">${cs.map(c=>cardFace(c,u)).join('')||'<div class="lane-empty">ไม่มีการ์ด</div>'}${l.id==='done'?'<div class="lane-empty">การ์ดโชว์ใน Board 30 วัน<br>หลังจากนั้นค้นหาได้ใน All Cards</div>':''}</div></section>`}).join('');
-  return `<div class="topbar"><div><h1>Board</h1><div class="sub">ล็อกอินเป็น ${esc(u.name)} (${esc(roleLabel(u))}) — ลากการ์ดเพื่อย้ายเลน หรือเปิดการ์ดแล้วใช้เมนู "ย้ายไป"</div></div>
+  return `<div class="topbar"><div><h1>Board</h1><div class="sub">ล็อกอินเป็น ${esc(u.name)} (${esc(roleLabel(u))}) — ลากการ์ดเพื่อย้ายเลน</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="demo-note">Prototype · ข้อมูลสมมุติ</span><button class="btn primary" type="button" id="addCard">+ Add Card</button></div></div>
     ${filterBar(ui.f,['k','lang','sec','pri','asg','st','type','lane','rev','ev'],'bf')}
     <div class="board-scroll"><div class="board">${lanes}</div></div>
@@ -642,7 +642,6 @@ function cardHtml(c){
     const acts=[];
     if(c.status==='TBC'&&(isAdmin(u)||c.reporter===u.name))acts.push('<button class="btn primary sm" type="button" data-act="ready">เปลี่ยน TBC → Ready</button>');
     if(c.lane==='review'&&c.status!=='Cancel'&&isEval(u,c))acts.push('<button class="btn primary sm" type="button" data-act="assess">ส่งประเมิน (Review → Assessment)</button>');
-    if(allowed.length)acts.push(`<label class="hint" for="moveTo">ย้ายไป</label><select id="moveTo"><option value="">เลือกเลน</option>${allowed.map(l=>`<option value="${l.id}">${l.name}</option>`).join('')}</select><button class="btn sm" type="button" data-act="move">ย้าย</button>`);
     if(canEdit(u,c)&&c.status!=='Cancel')acts.push('<button class="btn sm" type="button" data-act="edit">แก้ไขการ์ด</button>');
     if(c.status!=='Cancel'&&c.lane!=='done'&&(isAdmin(u)||(u.role==='Reporter'&&c.reporter===u.name)||(u.role==='Translator'&&cardFitsLang(c,u.lang))))acts.push('<button class="btn sm danger" type="button" data-act="cancel">Cancel การ์ด</button>');
     if(isAdmin(u))acts.push('<button class="btn sm danger" type="button" data-act="delete">ลบการ์ด</button>');
@@ -691,7 +690,6 @@ function bindCard(c){
     const a=b.dataset.act;const inl=$('#inline');
     if(a==='ready'){toReady(c);re()}
     else if(a==='assess'){toAssessment(c);cardTab='assess';re()}
-    else if(a==='move'){const to=$('#moveTo').value;if(!to){toast('เลือกเลนที่จะย้ายก่อน',true);return}if(moveCard(c,to))re()}
     else if(a==='edit'){openForm(c)}
     else if(a==='comment'){const t=$('#cmt').value.trim();if(!t){toast('พิมพ์ข้อความก่อนส่ง',true);return}addComment(c,t);re()}
     else if(a==='cancel'){inl.innerHTML=`<div class="actions" style="display:grid;gap:8px"><label for="cReason"><b>เหตุผลที่ Cancel</b> <span class="req">*</span></label><textarea id="cReason" class="f-input" rows="2" maxlength="300"></textarea><div style="display:flex;gap:8px"><button class="btn danger sm" type="button" id="cOk">ยืนยัน Cancel</button><button class="btn sm" type="button" id="cNo">ไม่ Cancel</button></div></div>`;$('#cReason').focus();
