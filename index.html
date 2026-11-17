@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: fixed left nav + working canvas; board scrolls sideways inside its own container. Palette from the team's agreed swatches. */
 :root{
   --bg:#F5F7FA; --surface:#FFFFFF; --surface-2:#EEF1F6; --line:#E8ECF2; --line-2:#D6DCE6;
   --fg:#1A2B4A; --muted:#6B7A90; --faint:#9AA6B8;
@@ -47,7 +46,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 .app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100%}
-/* ---------- Sidebar ---------- */
 .side{background:var(--nav);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;max-height:100%}
 .brand{background:var(--nav-head);color:var(--nav-head-fg);padding:18px 18px 16px;border-radius:0 0 14px 0;display:flex;gap:10px;align-items:center}
 .brand .globe{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-weight:700;font-size:12px}
@@ -70,7 +68,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 .me select{width:100%;padding:6px 8px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface)}
 .linkbtn{background:none;border:0;color:var(--muted);font-size:12px;cursor:pointer;padding:0;text-align:left;text-decoration:underline}
 
-/* ---------- Main ---------- */
 main{min-width:0;padding-block:18px 40px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
 .topbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
 .topbar h1{font-size:20px;margin:0;text-wrap:balance}
@@ -89,7 +86,6 @@ main{min-width:0;padding-block:18px 40px;padding-left:max(20px,env(safe-area-ins
 .filters label{display:grid;gap:2px;font-size:11px;color:var(--muted);letter-spacing:.03em}
 .filters input,.filters select{padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);font-size:13px;min-width:0}
 
-/* ---------- Board ---------- */
 .board-scroll{overflow-x:auto;padding-bottom:10px}
 .board{display:grid;grid-template-columns:repeat(8,minmax(214px,1fr));gap:10px;min-width:max-content}
 .lane{border-radius:12px;background:var(--surface-2);display:flex;flex-direction:column;min-height:420px;border:2px solid transparent;transition:border-color .12s}
@@ -139,7 +135,6 @@ main{min-width:0;padding-block:18px 40px;padding-left:max(20px,env(safe-area-ins
 
 .rules{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.7}
 
-/* ---------- Tables / panels ---------- */
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
 .tbl-wrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:13px}
@@ -149,7 +144,6 @@ tbody tr:hover td{background:var(--surface-2)}
 tr.click{cursor:pointer}
 .empty{color:var(--faint);text-align:center;padding:28px 10px}
 
-/* ---------- Notifications ---------- */
 .noti{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer}
 .noti:hover{background:var(--surface-2)}
 .noti .dot{width:8px;height:8px;border-radius:50%;background:var(--pink);margin-top:7px;flex:none}
@@ -163,7 +157,6 @@ tr.click{cursor:pointer}
 .theme-seg{display:flex}
 .theme-seg button{flex:1;font-size:12px;padding:5px 8px}
 
-/* ---------- Dashboard ---------- */
 .draft{font-size:12px;color:var(--neg);margin-bottom:10px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px}
 .kpi{border-radius:10px;padding:14px 16px;color:#fff;display:grid;gap:2px}
@@ -178,7 +171,6 @@ tr.click{cursor:pointer}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
 svg text{fill:var(--muted);font-family:var(--font)}
 
-/* ---------- Modal ---------- */
 .overlay{position:fixed;inset:0;background:rgba(14,21,36,.45);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 24px max(12px,env(safe-area-inset-left,0px));overflow:auto;z-index:20}
 .modal{background:var(--surface);border-radius:16px;width:min(760px,100%);box-shadow:0 20px 50px rgba(0,0,0,.25);overflow:hidden}
 .modal.narrow{width:min(520px,100%)}
@@ -214,7 +206,6 @@ svg text{fill:var(--muted);font-family:var(--font)}
 .checks label{display:inline-flex;gap:5px;align-items:center;font-size:13px}
 .err{color:var(--neg);font-size:12px;grid-column:2}
 .hint{font-size:12px;color:var(--muted)}
-/* ── Custom Dropdown for Collaborator ── */
 .dd-wrap{position:relative}
 .dd-btn{width:100%;padding:7px 10px;border:1px solid var(--line-2);border-radius:8px;background:var(--surface);color:var(--fg);font:inherit;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:6px}
 .dd-btn:focus{outline:2px solid var(--primary);outline-offset:2px}
@@ -229,7 +220,6 @@ svg text{fill:var(--muted);font-family:var(--font)}
 .dd-item input{accent-color:var(--primary);width:15px;height:15px;flex:none;cursor:pointer}
 .dd-item label{font-size:13px;cursor:pointer;flex:1}
 .lang-badge{font-size:11px;font-family:var(--mono);background:var(--line-2);color:var(--muted);padding:0 6px;border-radius:4px}
-/* ── @mention Floating Dropdown ── */
 .mw{position:relative;flex:1;min-width:0}
 .men-dd{display:none;position:absolute;z-index:30;background:var(--surface);border:1.5px solid var(--primary);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);width:260px;overflow:hidden;bottom:calc(100% + 6px);left:0}
 .men-dd.show{display:block}
@@ -249,21 +239,6 @@ svg text{fill:var(--muted);font-family:var(--font)}
 
 .toast{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:13px;max-width:min(380px,calc(100vw - 32px));z-index:40;box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .toast.bad{background:var(--neg);color:#fff}
-/* ---------- Multi-lang cards ---------- */
-.card.parent-c{border-color:var(--pink);border-width:1.5px}
-.card.parent-c .cid::after{content:' ·PARENT';color:var(--pink);font-weight:700;letter-spacing:.04em}
-.card.sub-c{border-left:3px solid var(--sky);padding-left:8px}
-.card.sub-c .cid{color:var(--sky)}
-.sub-list{display:grid;gap:5px;margin-top:4px}
-.sub-item{display:flex;gap:6px;align-items:center;font-size:12px;padding:4px 8px;background:var(--surface-2);border-radius:7px;cursor:pointer}
-.sub-item:hover{background:var(--primary-soft)}
-.sub-item .sub-id{font-family:var(--mono);color:var(--primary)}
-.parent-ref{background:var(--primary-soft);border:1px solid color-mix(in srgb,var(--primary) 30%,transparent);border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:12px;display:flex;gap:8px;align-items:center}
-/* sub-card preview in create form */
-.sub-preview{background:var(--surface-2);border:1px dashed var(--primary);border-radius:9px;padding:10px 12px;margin-top:4px;grid-column:2}
-.sub-preview h5{margin:0 0 6px;font-size:12px;color:var(--primary);font-weight:700}
-.sub-preview ul{margin:0;padding:0;list-style:none;display:flex;gap:6px;flex-wrap:wrap}
-.sub-preview li{font-size:12px;border:1px solid var(--line-2);border-radius:6px;padding:2px 8px;color:var(--muted);font-family:var(--mono)}
 
 @media (max-width:820px){
   .app{grid-template-columns:1fr}
@@ -306,7 +281,6 @@ svg text{fill:var(--muted);font-family:var(--font)}
 <script>
 (function(){
 'use strict';
-/* ================= Constants ================= */
 const LANES=[
   {id:'todo',name:'To Do',who:'Reporter'},
   {id:'en',name:'English',who:'Translator EN'},
@@ -325,15 +299,12 @@ const TYPES=['Simultaneous Interpreter','Document Translation','Video Translatio
 const SECTIONS=['FLP','PLP','LDP','SLP','KM','DGT','Convention','Others'];
 const PRIORITIES=['Normal','Urgent'];
 const LANG_LANE={EN:'en',CN:'cn',Other:'other'};
-const LANG_TO_LANE={EN:'en',CN:'cn',VN:'other',Other:'other'};
 const AV_COLORS=['#1A7AC4','#E8417A','#00B5A5','#F5A623','#7A55A8','#29A8E0','#2E8A55','#B8650A'];
 const STORE_KEY='tms-prototype-v1';
 const DAY=86400000;
 
-/* ================= Helpers ================= */
 const $=s=>document.querySelector(s);
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function d(iso){return iso?new Date(iso):null}
 function fmtD(iso){if(!iso)return '-';return new Date(iso).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'})}
 function fmtDT(iso){if(!iso)return '-';return new Date(iso).toLocaleString('th-TH',{day:'numeric',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'})}
 function ago(iso){const s=(Date.now()-new Date(iso))/1000;if(s<60)return 'เมื่อกี้';if(s<3600)return Math.floor(s/60)+' นาทีที่แล้ว';if(s<86400)return Math.floor(s/3600)+' ชม. ที่แล้ว';if(s<86400*7)return Math.floor(s/86400)+' วันที่แล้ว';if(s<86400*30)return Math.floor(s/86400/7)+' สัปดาห์ที่แล้ว';return Math.floor(s/86400/30)+' เดือนที่แล้ว'}
@@ -342,11 +313,10 @@ function iso(y,m,dd,h){return new Date(y,m-1,dd,h||10,0).toISOString()}
 function hash(s){let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)}
 function av(name,cls){if(!name)return '';return `<span class="av ${cls||''}" style="background:${AV_COLORS[hash(name)%AV_COLORS.length]}" title="${esc(name)}">${esc([...name.replace(/^คุณ/,'').replace(/^[เแโใไ]/,'')][0]||'?')}</span>`}
 function chip(st){return `<span class="chip ${S_CLASS[st]||''}">${esc(st)}</span>`}
-function opt(list,sel,allLabel){return (allLabel?`<option value="">${allLabel}</option>`:'')+list.map(o=>{const v=typeof o==='object'?o.v:o,t=typeof o==='object'?o.t:o;return `<option value="${esc(v)}"${v===sel?' selected':''}>${esc(t)}</option>`}).join('')}
+function opt(list,sel,allLabel){return (allLabel?`<option value="">${allLabel}</option>`:'')+list.map(o=>{const v=typeof o==='object'?o.v:o,t=typeof o==='object'?o.t:o;return `<option value="${esc(v)}" ${v===sel?'selected':''}>${esc(t)}</option>`}).join('')}
 function safeUrl(u){return /^https:\/\/[^\s"'<>]+$/i.test(u||'')?u:''}
-function toast(msg,bad){const r=$('#toastRoot');r.innerHTML=`<div class="toast${bad?' bad':''}" role="status">${esc(msg)}</div>`;clearTimeout(toast.t);toast.t=setTimeout(()=>r.innerHTML='',3200)}
+function toast(msg,bad){const r=$('#toastRoot');r.innerHTML=`<div class="toast ${bad?' bad':''}" role="status">${esc(msg)}</div>`;clearTimeout(toast.t);toast.t=setTimeout(()=>r.innerHTML='',3200)}
 
-/* ================= Seed data (ข้อมูลสมมุติ) ================= */
 function seed(){
   const users=[
     {id:'0000000000001',name:'Chaniporn Thipkul',email:'chanipon@cpli.co.th',role:'Admin',lang:'',section:['FLP'],active:true,mobile:'08x-xxx-0001',line:'eye.c',created:iso(2026,9,1),last:iso(2026,10,14,9)},
@@ -359,7 +329,7 @@ function seed(){
     {id:'0000000000008',name:'คุณเพื่อน',email:'puan@example.com',role:'Translator',lang:'Other',section:[],active:true,mobile:'',line:'',created:iso(2026,9,3),last:iso(2026,10,11,9)}
   ];
   const H=(user,lane,action,date)=>({user,lane,action,date});
-  const base=(o)=>Object.assign({languages:['EN'],type:'Document Translation',reporter:'คุณนภา',section:'FLP',reporterEmail:'napa@example.com',assignee:'',collaborators:[],evaluator:'คุณนภา',note:'',priority:'Normal',deadline:'',link:'',createdAt:iso(2026,10,1),readyAt:'',updatedAt:iso(2026,10,1),doneAt:'',revision:0,history:[],comments:[],assessment:null,assessLink:'',cancelReason:'',cancelBy:'',isParent:false,parentId:null,subCards:[]},o);
+  const base=(o)=>Object.assign({languages:['EN'],type:'Document Translation',reporter:'คุณนภา',section:'FLP',reporterEmail:'napa@example.com',assignee:'',collaborators:[],evaluator:'คุณนภา',note:'',priority:'Normal',deadline:'',link:'',createdAt:iso(2026,10,1),readyAt:'',updatedAt:iso(2026,10,1),doneAt:'',revision:0,history:[],comments:[],assessment:null,assessLink:'',cancelReason:'',cancelBy:''},o);
   const cards=[
     base({id:'TMS-00001',title:'FLP Module 3 — แปลสไลด์ Q3',lane:'todo',status:'Ready',languages:['EN'],assignee:'Anna',priority:'Urgent',deadline:iso(2026,10,20),createdAt:iso(2026,10,10),readyAt:iso(2026,10,14,9),link:'https://example.sharepoint.com/sites/flp/module3',history:[H('คุณนภา','To Do','สร้างการ์ด (TBC)',iso(2026,10,10)),H('คุณนภา','To Do','TBC → Ready',iso(2026,10,14,9))]}),
     base({id:'TMS-00002',title:'LDP Leadership Guide Ch.2',lane:'todo',status:'TBC',languages:['CN'],reporter:'คุณกิ่ง',section:'LDP',reporterEmail:'king@example.com',evaluator:'คุณกิ่ง',assignee:'Sara',deadline:iso(2026,10,31),createdAt:iso(2026,10,12),history:[H('คุณกิ่ง','To Do','สร้างการ์ด (TBC)',iso(2026,10,12))]}),
@@ -371,7 +341,6 @@ function seed(){
     base({id:'TMS-00008',title:'PLP Workshop Script',lane:'correction',status:'Edit',languages:['CN'],assignee:'Sara',section:'PLP',deadline:iso(2026,10,22),createdAt:iso(2026,9,30),readyAt:iso(2026,9,30),revision:1,history:[H('คุณนภา','To Do','สร้างการ์ด (Ready)',iso(2026,9,30)),H('Sara','Chinese','To Do → Chinese',iso(2026,10,1)),H('Sara','Review','Chinese → Review',iso(2026,10,9)),H('คุณนภา','Correction','Review → Correction',iso(2026,10,11))],comments:[{user:'คุณนภา',text:'@Sara หน้า 4-6 ศัพท์เทคนิคยังไม่ตรง glossary ค่ะ',date:iso(2026,10,11,14)}]}),
     base({id:'TMS-00009',title:'CPVS : VDO',lane:'done',status:'Done',languages:['Other'],type:'Video Translation',assignee:'คุณเพื่อน',section:'Convention',deadline:iso(2026,10,10),createdAt:iso(2026,9,15),readyAt:iso(2026,9,16),doneAt:iso(2026,10,8),assessLink:'FORM-00009',assessment:{score:5,timing:'ตามกำหนด',suggest:'คุณภาพดีมาก',by:'คุณนภา',date:iso(2026,10,8)},history:[H('คุณนภา','Done','ประเมินเสร็จ → Done',iso(2026,10,8))]})
   ];
-  // Older finished work (for All Cards + Dashboard)
   const old=[
     ['DGT Data Literacy Deck','EN','Document Translation','Anna','DGT',1,20,4,'ตามกำหนด'],
     ['SLP Town Hall','EN','Simultaneous Interpreter','James','SLP',2,14,5,'เร็วกว่ากำหนด'],
@@ -387,10 +356,6 @@ function seed(){
   ];
   old.forEach((o,i)=>{const n=10+i;const done=iso(2026,o[5],o[6]);cards.push(base({id:'TMS-'+String(n).padStart(5,'0'),title:o[0],lane:'done',status:'Done',languages:[o[1]],type:o[2],assignee:o[3],section:o[4],deadline:done,createdAt:new Date(new Date(done)-12*DAY).toISOString(),readyAt:new Date(new Date(done)-11*DAY).toISOString(),doneAt:done,updatedAt:done,assessLink:'FORM-'+n,assessment:{score:o[7],timing:o[8],suggest:'',by:'คุณนภา',date:done},history:[H('คุณนภา','Done','ประเมินเสร็จ → Done',done)]}))});
   cards.push(base({id:'TMS-00021',title:'KM Newsletter ฉบับ ก.ย.',lane:'todo',status:'Cancel',languages:['EN'],section:'KM',reporter:'คุณกิ่ง',reporterEmail:'king@example.com',evaluator:'คุณกิ่ง',cancelReason:'ทีม KM ยกเลิกการจัดทำฉบับนี้',cancelBy:'คุณกิ่ง',createdAt:iso(2026,9,5),updatedAt:iso(2026,9,8),history:[H('คุณกิ่ง','To Do','Cancel: ทีม KM ยกเลิกการจัดทำฉบับนี้',iso(2026,9,8))]}));
-  // TMS-00022: ตัวอย่าง Multi-language (Parent + Sub-cards)
-  cards.push(base({id:'TMS-00022',title:'FLP Q4 Annual Report 2026',lane:'todo',status:'Ready',languages:['EN','CN'],isParent:true,subCards:['TMS-00022-EN','TMS-00022-CN'],section:'FLP',reporter:'Chaniporn Thipkul',reporterEmail:'chaniporn.thi@cpli.co.th',evaluator:'Chaniporn Thipkul',priority:'Normal',deadline:iso(2026,11,30),createdAt:iso(2026,11,1),readyAt:iso(2026,11,1),updatedAt:iso(2026,11,1),note:'งานนี้มี 2 ภาษา ระบบสร้าง Sub-cards อัตโนมัติ',history:[H('Chaniporn Thipkul','To Do','สร้างการ์ด (Ready) + Sub-cards',iso(2026,11,1))]}));
-  cards.push(base({id:'TMS-00022-EN',title:'FLP Q4 Annual Report 2026',lane:'en',status:'On Going',languages:['EN'],isParent:false,parentId:'TMS-00022',section:'FLP',reporter:'Chaniporn Thipkul',reporterEmail:'chaniporn.thi@cpli.co.th',assignee:'Anna',evaluator:'Chaniporn Thipkul',priority:'Normal',deadline:iso(2026,11,30),createdAt:iso(2026,11,1),readyAt:iso(2026,11,1),updatedAt:iso(2026,11,2),history:[H('Chaniporn Thipkul','To Do','สร้าง Sub-card (Ready)',iso(2026,11,1)),H('Anna','English','To Do → English',iso(2026,11,2))]}));
-  cards.push(base({id:'TMS-00022-CN',title:'FLP Q4 Annual Report 2026',lane:'cn',status:'On Going',languages:['CN'],isParent:false,parentId:'TMS-00022',section:'FLP',reporter:'Chaniporn Thipkul',reporterEmail:'chaniporn.thi@cpli.co.th',assignee:'Sara',evaluator:'Chaniporn Thipkul',priority:'Normal',deadline:iso(2026,11,30),createdAt:iso(2026,11,1),readyAt:iso(2026,11,1),updatedAt:iso(2026,11,2),history:[H('Chaniporn Thipkul','To Do','สร้าง Sub-card (Ready)',iso(2026,11,1)),H('Sara','Chinese','To Do → Chinese',iso(2026,11,2))]}));
   const notis=[
     {id:'n1',to:['Anna'],text:'คุณนภา กล่าวถึงคุณ : อัปเดตไฟล์ Final แล้วนะคะ @Anna รบกวนตรวจสอบหน่อย',card:'TMS-00005',date:iso(2026,10,14,9),read:{}},
     {id:'n2',to:['Anna'],text:'ไฟล์ final แล้ว! สามารถเริ่มแปลได้',card:'TMS-00001',date:iso(2026,10,14,9),read:{}},
@@ -407,10 +372,9 @@ function seed(){
     {date:iso(2026,10,12),user:'James',action:'English → Review',target:'TMS-00006'},
     {date:iso(2026,10,12),user:'คุณกิ่ง',action:'สร้างการ์ด',target:'TMS-00002'}
   ];
-  return {users,cards,notis,audit,me:'Chaniporn Thipkul',seq:22};
+  return {users,cards,notis,audit,me:'Chaniporn Thipkul',seq:21};
 }
 
-/* ================= State ================= */
 let S;
 function load(){try{const raw=localStorage.getItem(STORE_KEY);if(raw){S=JSON.parse(raw);if(S&&S.cards&&S.users)return}}catch(e){}S=seed()}
 function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(S))}catch(e){}}
@@ -421,8 +385,6 @@ try{const v=localStorage.getItem(STORE_KEY+'-view');if(v)ui.view=v}catch(e){}
 const me=()=>S.users.find(u=>u.name===S.me)||S.users[0];
 const userBy=n=>S.users.find(u=>u.name===n);
 const cardBy=id=>S.cards.find(c=>c.id===id);
-const subCardsOf=c=>(c.subCards||[]).map(id=>cardBy(id)).filter(Boolean);
-const parentOf=c=>c.parentId?cardBy(c.parentId):null;
 const translators=()=>S.users.filter(u=>u.role==='Translator'&&u.active);
 const isAdmin=u=>u.role==='Admin';
 const isEval=(u,c)=>isAdmin(u)||c.evaluator===u.name;
@@ -430,11 +392,9 @@ function roleLabel(u){return u.role==='Translator'?`Translator · ${u.lang}`:u.r
 function langLaneOf(u){return LANG_LANE[u.lang]}
 function cardFitsLang(c,lang){if(lang==='Other')return c.languages.some(l=>l==='VN'||l==='Other');return c.languages.includes(lang)}
 
-/* ================= Rules ================= */
 function canMove(u,c,to){
   const from=c.lane;
   if(from===to)return {ok:false,why:''};
-  if(c.isParent)return {ok:false,why:'Parent card ถูกจัดการอัตโนมัติ — ลาก Sub-cards แทน'};
   if(c.status==='Cancel')return {ok:false,why:'การ์ดนี้ถูก Cancel แล้ว'};
   if(to==='assessment')return {ok:false,why:'ย้ายเข้า Assessment ด้วยปุ่ม "ส่งประเมิน" ในการ์ด เพื่อให้ระบบสร้างลิงก์ประเมิน'};
   if(from==='assessment'&&to==='done')return {ok:false,why:'การ์ดจะไป Done อัตโนมัติเมื่อ Evaluator กด Submit แบบประเมิน'};
@@ -468,7 +428,6 @@ function canEdit(u,c){
   return false;
 }
 
-/* ================= Mutations ================= */
 function log(action,target){S.audit.unshift({date:nowISO(),user:S.me,action,target})}
 function notify(to,text,card){const list=[...new Set(to.filter(Boolean))].filter(n=>n!==S.me);if(!list.length)return;S.notis.unshift({id:'n'+Date.now()+Math.random().toString(36).slice(2,6),to:list,text,card,date:nowISO(),read:{}})}
 function hist(c,action){c.history.push({user:S.me,lane:LANE_NAME[c.lane],action,date:nowISO()});c.updatedAt=nowISO()}
@@ -484,33 +443,15 @@ function moveCard(c,to){
   else if(to==='correction'){c.status='Edit';c.revision=(c.revision||0)+1;notify([...team(c),c.reporter,c.evaluator],'งานต้องการการแก้ไข กรุณาตรวจสอบ',c.id)}
   else if(to==='done'){c.status='Done';c.doneAt=c.doneAt||nowISO()}
   else if(to==='todo'){c.status=c.readyAt?'Ready':'TBC'}
-  hist(c,label);log(label,c.id);save();toast(`ย้าย ${c.id} ไป ${LANE_NAME[to]} แล้ว (Status: ${c.status})`);
-  // Auto-Done parent เมื่อ sub-cards ทุกใบ Done หรือ Cancel
-  if(to==='done'&&c.parentId){
-    const p=cardBy(c.parentId);
-    if(p&&!p.doneAt&&subCardsOf(p).every(sc=>sc.lane==='done'||sc.status==='Cancel')){
-      p.lane='done';p.status='Done';p.doneAt=nowISO();
-      hist(p,'Sub-cards ครบทุกภาษา → Done อัตโนมัติ');log('Parent Auto-Done',p.id);
-      notify([...team(p),p.reporter],'งานเสร็จสมบูรณ์ทุกภาษา',p.id);save();
-      toast(`Parent ${p.id} Done อัตโนมัติ เพราะ Sub-cards ครบแล้ว`);
-    }
-  }
-  return true;
+  hist(c,label);log(label,c.id);save();toast(`ย้าย ${c.id} ไป ${LANE_NAME[to]} แล้ว (Status: ${c.status})`);return true;
 }
-function toReady(c){c.status='Ready';c.readyAt=nowISO();hist(c,'TBC → Ready');log('TBC → Ready',c.id);notify(team(c),'ไฟล์ final แล้ว! สามารถเริ่มแปลได้',c.id);
-  // cascade Ready ไป sub-cards ที่ยัง TBC
-  subCardsOf(c).forEach(sc=>{if(sc.status==='TBC'){sc.status='Ready';sc.readyAt=sc.readyAt||nowISO();hist(sc,'Parent→Ready Cascade');notify(team(sc),'ไฟล์ final แล้ว! สามารถเริ่มแปลได้',sc.id)}});
-  save();toast('เปลี่ยนเป็น Ready แล้ว และแจ้งเตือนผู้รับงานแล้ว')}
+function toReady(c){c.status='Ready';c.readyAt=nowISO();hist(c,'TBC → Ready');log('TBC → Ready',c.id);notify(team(c),'ไฟล์ final แล้ว! สามารถเริ่มแปลได้',c.id);save();toast('เปลี่ยนเป็น Ready แล้ว และแจ้งเตือนผู้รับงานแล้ว')}
 function toAssessment(c){c.lane='assessment';c.status='Assessment';c.assessLink='FORM-'+c.id.slice(4);hist(c,'Review → Assessment');log('Review → Assessment',c.id);notify([c.evaluator],'พร้อมประเมิน — ลิงก์ประเมินถูกส่งให้คุณแล้ว',c.id);save();toast('ส่งเข้า Assessment แล้ว ระบบสร้างลิงก์ประเมินให้ Evaluator')}
 function submitAssessment(c,a){c.assessment=Object.assign(a,{by:S.me,date:nowISO()});c.lane='done';c.status='Done';c.doneAt=nowISO();hist(c,'Submit แบบประเมิน → Done');log('Submit แบบประเมิน',c.id);notify([...team(c),c.reporter],'งานเสร็จสมบูรณ์',c.id);save();toast('ส่งแบบประเมินแล้ว การ์ดย้ายไป Done อัตโนมัติ')}
-function cancelCard(c,reason){c.status='Cancel';c.cancelReason=reason;c.cancelAt=nowISO();c.cancelBy=S.me;hist(c,'Cancel: '+reason);log('Cancel',c.id);notify([...team(c),c.reporter],'การ์ดถูก Cancel — '+reason,c.id);
-  // cascade cancel ไป sub-cards
-  if(c.isParent){subCardsOf(c).forEach(sc=>{if(sc.status!=='Cancel'){sc.status='Cancel';sc.cancelReason=reason+' [Parent Cancel]';sc.cancelAt=nowISO();sc.cancelBy=S.me;hist(sc,'Cancel Cascade จาก Parent');notify([...team(sc)],'Sub-card ถูก Cancel ตาม Parent',sc.id)}});}
-  save();toast(`Cancel ${c.id} แล้ว ค้นหาได้ใน All Cards`)}
+function cancelCard(c,reason){c.status='Cancel';c.cancelReason=reason;c.cancelAt=nowISO();c.cancelBy=S.me;hist(c,'Cancel: '+reason);log('Cancel',c.id);notify([...team(c),c.reporter],'การ์ดถูก Cancel — '+reason,c.id);save();toast(`Cancel ${c.id} แล้ว ค้นหาได้ใน All Cards`)}
 function deleteCard(c){S.cards=S.cards.filter(x=>x.id!==c.id);log('ลบการ์ด',c.id);save();toast(`ลบ ${c.id} ออกจากระบบแล้ว`)}
 function addComment(c,text){c.comments.push({user:S.me,text,date:nowISO()});c.updatedAt=nowISO();const mentioned=S.users.filter(u=>text.includes('@'+u.name)).map(u=>u.name);notify(mentioned,`${S.me} กล่าวถึงคุณ : ${text}`,c.id);notify([...team(c),c.reporter].filter(n=>!mentioned.includes(n)),`${S.me} คอมเมนต์ : ${text}`,c.id);log('Comment',c.id);save()}
 
-/* ================= Navigation ================= */
 const NAV=[
   {g:'MAIN',items:[{v:'board',ic:'▦',t:'Board'},{v:'notis',ic:'◔',t:'Notifications'}]},
   {g:'WORKSPACE',items:[{v:'dash',ic:'▤',t:'Dashboard'},{v:'all',ic:'▢',t:'All Cards'}]},
@@ -526,11 +467,10 @@ function renderNav(){
     let b='';if(i.v==='board')b=`<span class="badge">${boardCards().length}</span>`;if(i.v==='notis'){const n=unread();b=n?`<span class="badge pink">${n}</span>`:''}
     return `<button type="button" data-view="${i.v}" class="${ui.view===i.v?'on':''}"><span class="ic" aria-hidden="true">${i.ic}</span>${i.t}${b}</button>`}).join('')).join('');
   $('#meRow').innerHTML=`${av(u.name,'lg')}<div><b>${esc(u.name)}</b><small>${esc(roleLabel(u))}</small></div>`;
-  $('#persona').innerHTML=S.users.filter(x=>x.active).map(x=>`<option value="${esc(x.name)}"${x.name===S.me?' selected':''}>${esc(x.name)} — ${esc(roleLabel(x))}</option>`).join('');
+  $('#persona').innerHTML=S.users.filter(x=>x.active).map(x=>`<option value="${esc(x.name)}" ${x.name===S.me?'selected':''}>${esc(x.name)} — ${esc(roleLabel(x))}</option>`).join('');
 }
 function render(){renderNav();const v={board:viewBoard,notis:viewNotis,dash:viewDash,all:viewAll,users:viewUsers,audit:viewAudit}[ui.view]||viewBoard;$('#main').innerHTML=v();bindView()}
 
-/* ================= Board ================= */
 function filterCards(list,f){
   const k=(f.k||'').trim().toLowerCase();
   return list.filter(c=>(!k||(c.id+' '+c.title+' '+c.note).toLowerCase().includes(k))
@@ -539,8 +479,9 @@ function filterCards(list,f){
     &&(!f.lane||c.lane===f.lane)&&(!f.ev||c.evaluator===f.ev)&&(f.rev===undefined||f.rev===''||String(c.revision||0)===f.rev))
 }
 function filterBar(f,keys,prefix){
-  const users=S.users.map(u=>u.name);const evals=S.users.filter(u=>u.role!=='Translator').map(u=>u.name);
-  const F={k:`<label>Keyword<input id="${prefix}-k" data-f="k" value="${esc(f.k||'')}" placeholder="ID หรือชื่องาน"></label>`,
+  const evals=S.users.filter(u=>u.role!=='Translator').map(u=>u.name);
+  const F={
+    k:`<label>Keyword<input id="${prefix}-k" data-f="k" value="${esc(f.k||'')}" placeholder="ID หรือชื่องาน"></label>`,
     lang:`<label>Language<select id="${prefix}-lang" data-f="lang">${opt(LANGS,f.lang,'All')}</select></label>`,
     sec:`<label>Reporter Section<select id="${prefix}-sec" data-f="sec">${opt(SECTIONS,f.sec,'All')}</select></label>`,
     pri:`<label>Priority<select id="${prefix}-pri" data-f="pri">${opt(PRIORITIES,f.pri,'All')}</select></label>`,
@@ -549,26 +490,18 @@ function filterBar(f,keys,prefix){
     type:`<label>Type<select id="${prefix}-type" data-f="type">${opt(TYPES,f.type,'All')}</select></label>`,
     lane:`<label>Lane<select id="${prefix}-lane" data-f="lane">${opt(LANES.map(l=>({v:l.id,t:l.name})),f.lane,'All')}</select></label>`,
     rev:`<label>Revision Round<select id="${prefix}-rev" data-f="rev">${opt(['0','1','2','3'],f.rev,'All')}</select></label>`,
-    ev:`<label>Evaluator<select id="${prefix}-ev" data-f="ev">${opt(evals,f.ev,'All')}</select></label>`};
-  void users;
+    ev:`<label>Evaluator<select id="${prefix}-ev" data-f="ev">${opt(evals,f.ev,'All')}</select></label>`
+  };
   return `<div class="filters" data-fset="${prefix}">${keys.map(k=>F[k]).join('')}</div>`;
 }
 function cardFace(c,u){
   const late=c.deadline&&c.lane!=='done'&&new Date(c.deadline)<Date.now();
   const isCreatorInReview=c.reporter===u.name&&c.lane==='review';
-  // Parent card ห้าม drag เสมอ; sub-card ใช้ rule ปกติ
-  let drag;
-  if(c.isParent){drag='false'}
-  else{drag=(!isAdmin(u)&&(['done'].includes(c.lane)||(u.role==='Translator'&&!cardFitsLang(c,u.lang)&&!isCreatorInReview)||(u.role==='Reporter'&&!isCreatorInReview)))?'false':'true'}
-  const extraClass=(c.isParent?' parent-c':c.parentId?' sub-c':'');
-  // sub-card progress สำหรับ parent card
-  const subProg=c.isParent&&c.subCards&&c.subCards.length?
-    `<span class="row" style="margin-top:2px">${subCardsOf(c).map(sc=>`<span class="tag" style="font-family:var(--mono);font-size:10px">${esc(sc.id.split('-').pop())} ${chip(sc.status)}</span>`).join('')}</span>`:'';
-  return `<button type="button" class="card${extraClass}" draggable="${drag}" data-card="${esc(c.id)}">
+  const drag=(!isAdmin(u)&&(['done'].includes(c.lane)||(u.role==='Translator'&&!cardFitsLang(c,u.lang)&&!isCreatorInReview)||(u.role==='Reporter'&&!isCreatorInReview)))?'false':'true';
+  return `<button type="button" class="card" draggable="${drag}" data-card="${esc(c.id)}">
     <span class="cid mono">${esc(c.id)}</span>
     <span class="ttl">${esc(c.title)}</span>
     <span class="row">${chip(c.status)}<span class="tag">${esc(c.section)}</span>${c.languages.map(l=>`<span class="tag">${esc(l)}</span>`).join('')}${c.priority==='Urgent'?'<span class="urgent">URGENT</span>':''}${c.revision?`<span class="tag">รอบแก้ ${c.revision}</span>`:''}</span>
-    ${subProg}
     <span class="foot"><span class="avs">${[c.assignee,...c.collaborators].filter(Boolean).map(n=>av(n)).join('')||'<span class="hint">ยังไม่มีผู้รับงาน</span>'}</span><span class="${late?'late':''}">${c.lane==='done'?'เสร็จ '+fmtD(c.doneAt):(c.deadline?(late?'เลยกำหนด ':'')+fmtD(c.deadline):'')}</span></span>
   </button>`;
 }
@@ -581,28 +514,25 @@ function viewBoard(){
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="demo-note">Prototype · ข้อมูลสมมุติ</span><button class="btn primary" type="button" id="addCard">+ Add Card</button></div></div>
     ${filterBar(ui.f,['k','lang','sec','pri','asg','st','type','lane','rev','ev'],'bf')}
     <div class="board-scroll"><div class="board">${lanes}</div></div>
-    <p class="rules"><b>Drag Rules:</b> Reporter ลากได้แค่ Review → Correction · Translator ลากได้เฉพาะการ์ดที่ตรงภาษาตัวเองเท่านั้น: To Do → เลนภาษาตัวเอง (เฉพาะการ์ด Ready), ภาษา → Review, Correction → Review (เฉพาะการ์ดภาษาตัวเอง) · Evaluator ลาก Review → Correction และกด "ส่งประเมิน" เพื่อเข้า Assessment · Assessment ไป Done อัตโนมัติเมื่อ Submit แบบประเมิน · Done ลากกลับได้เฉพาะ Admin</p>`;
+    `;
 }
 
-/* ================= Notifications ================= */
 function viewNotis(){
   let list=myNotis();if(ui.notiTab==='unread')list=list.filter(n=>!n.read[S.me]);
   return `<div class="topbar"><div><h1>Notifications</h1><div class="sub">noti งาน ready, comment, status เปลี่ยน, การ์ดถูก assign และ @mention ถึงคุณ</div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><div class="seg" role="tablist"><button type="button" data-ntab="all" class="${ui.notiTab==='all'?'on':''}">ทั้งหมด</button><button type="button" data-ntab="unread" class="${ui.notiTab==='unread'?'on':''}">ยังไม่อ่าน (${unread()})</button></div><button class="btn" type="button" id="readAll">อ่านทั้งหมด</button></div></div>
-    <div class="panel" style="padding:0">${list.map(n=>{const c=cardBy(n.card);return `<div class="noti${n.read[S.me]?' read':''}" data-noti="${esc(n.id)}" tabindex="0" role="button"><span class="dot"></span><div class="txt">${esc(n.text)} · [${esc(c?c.title:n.card)}]<span class="when">${ago(n.date)}${isAdmin(me())?' · ถึง '+esc(n.to.join(', ')):''}</span></div></div>`}).join('')||'<div class="empty">ไม่มีการแจ้งเตือน</div>'}</div>`;
+    <div class="panel" style="padding:0">${list.map(n=>{const c=cardBy(n.card);return `<div class="noti ${n.read[S.me]?' read':''}" data-noti="${esc(n.id)}" tabindex="0" role="button"><span class="dot"></span><div class="txt">${esc(n.text)} · [${esc(c?c.title:n.card)}]<span class="when">${ago(n.date)}${isAdmin(me())?' · ถึง '+esc(n.to.join(', ')):''}</span></div></div>`}).join('')||'<div class="empty">ไม่มีการแจ้งเตือน</div>'}</div>`;
 }
 
-/* ================= All Cards ================= */
 function viewAll(){
   const list=filterCards(S.cards.filter(c=>c.lane==='done'||c.status==='Cancel'),ui.acf).sort((a,b)=>new Date(b.doneAt||b.updatedAt)-new Date(a.doneAt||a.updatedAt));
   return `<div class="topbar"><div><h1>All Cards</h1><div class="sub">Search & Archive — งาน Done และ Cancel ทั้งหมด ค้นหาได้ตลอด</div></div></div>
     ${filterBar(ui.acf,['k','lang','sec','asg','type','ev'],'af')}
-    <div class="panel tbl-wrap"><table><thead><tr><th>Card</th><th>Card Type</th><th>Title Name</th><th>Language</th><th>Assignee</th><th>Status</th><th>Score</th><th>Done / Cancel Date</th><th>Cancelled by</th></tr></thead><tbody>
-    ${list.map(c=>{const ctype=c.isParent?'<span class="tag" style="color:var(--pink);border-color:var(--pink)">Parent</span>':c.parentId?`<span class="tag" style="color:var(--sky);border-color:var(--sky)">Sub·${esc(c.id.split('-').pop())}</span>`:'<span class="tag">-</span>';return`<tr class="click" data-card="${esc(c.id)}" tabindex="0"><td class="mono">${esc(c.id)}</td><td>${ctype}</td><td>${esc(c.title)}</td><td>${esc(c.languages.join(', '))}</td><td>${esc(c.assignee||'-')}</td><td>${chip(c.status)}</td><td class="mono">${c.assessment?c.assessment.score+'/5':'-'}</td><td class="mono">${c.status==='Cancel'?fmtD(c.cancelAt)||'-':fmtD(c.doneAt)}</td><td>${c.status==='Cancel'?esc(c.cancelBy||'-'):'-'}</td></tr>`}).join('')||'<tr><td colspan="9" class="empty">ไม่พบการ์ดตามเงื่อนไข</td></tr>'}
+    <div class="panel tbl-wrap"><table><thead><tr><th>Card</th><th>Title Name</th><th>Language</th><th>Assignee</th><th>Status</th><th>Score</th><th>Done / Cancel Date</th><th>Cancelled by</th></tr></thead><tbody>
+    ${list.map(c=>`<tr class="click" data-card="${esc(c.id)}" tabindex="0"><td class="mono">${esc(c.id)}</td><td>${esc(c.title)}</td><td>${esc(c.languages.join(', '))}</td><td>${esc(c.assignee||'-')}</td><td>${chip(c.status)}</td><td class="mono">${c.assessment?c.assessment.score+'/5':'-'}</td><td class="mono">${c.status==='Cancel'?fmtD(c.cancelAt)||'-':fmtD(c.doneAt)}</td><td>${c.status==='Cancel'?esc(c.cancelBy||'-'):'-'}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">ไม่พบการ์ดตามเงื่อนไข</td></tr>'}
     </tbody></table></div>`;
 }
 
-/* ================= Dashboard ================= */
 function viewDash(){
   const f=ui.dashf;const all=filterCards(S.cards.filter(c=>c.status!=='Cancel'),f);
   const active=all.filter(c=>c.lane!=='done');const done=all.filter(c=>c.lane==='done');
@@ -613,12 +543,11 @@ function viewDash(){
   const laneCounts=LANES.filter(l=>l.id!=='done').map(l=>({l,n:active.filter(c=>c.lane===l.id).length}));
   const maxN=Math.max(1,...laneCounts.map(x=>x.n));
   const bars=laneCounts.map(x=>`<div class="bar-row"><span>${x.l.name}</span><div class="bar-track"><div class="bar-fill" style="width:${x.n/maxN*100}%;background:var(${laneColors[x.l.id]})"></div></div><span class="mono">${x.n}</span></div>`).join('');
-  // monthly done 2026 vs sample last year
   const thisY=Array.from({length:12},(_,m)=>done.filter(c=>{const t=new Date(c.doneAt);return t.getFullYear()===2026&&t.getMonth()===m}).length);
   const lastY=[1,1,2,1,2,1,2,2,1,2,2,1];
   const cur=new Date().getMonth();
   const W=520,Hh=200,pl=28,pr=12,pt=12,pb=26;const maxY=Math.max(3,...thisY,...lastY);
-  const xs=m=>pl+m*(W-pl-pr)/11, ys=v=>pt+(Hh-pt-pb)*(1-v/maxY);
+  const xs=m=>pl+m*(W-pl-pr)/11,ys=v=>pt+(Hh-pt-pb)*(1-v/maxY);
   const path=(arr,n)=>arr.slice(0,n).map((v,i)=>(i?'L':'M')+xs(i).toFixed(1)+' '+ys(v).toFixed(1)).join(' ');
   const months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
   let grid='';for(let v=0;v<=maxY;v++){grid+=`<line x1="${pl}" x2="${W-pr}" y1="${ys(v)}" y2="${ys(v)}" stroke="var(--line)" stroke-width="1"/><text x="${pl-8}" y="${ys(v)+4}" font-size="10" text-anchor="end">${v}</text>`}
@@ -626,15 +555,14 @@ function viewDash(){
   const nThis=Math.min(12,cur+1);
   const line=`<svg viewBox="0 0 ${W} ${Hh}" width="100%" role="img" aria-label="จำนวนงานที่เสร็จรายเดือน">${grid}${xl}
     <path d="${path(lastY,12)}" fill="none" stroke="var(--line-2)" stroke-width="2"/>
-    <path d="${path(thisY,nThis)} L${xs(nThis-1)} ${ys(0)} L${xs(0)} ${ys(0)} Z" fill="var(--sky)" opacity=".12"/>
+    <path d="${path(thisY,nThis)}L${xs(nThis-1)} ${ys(0)}L${xs(0)} ${ys(0)} Z" fill="var(--sky)" opacity=".12"/>
     <path d="${path(thisY,nThis)}" fill="none" stroke="var(--sky)" stroke-width="2.5"/>
     <circle cx="${xs(nThis-1)}" cy="${ys(thisY[nThis-1])}" r="4" fill="var(--sky)"/></svg>`;
-  // pie by type
   const tc=TYPES.map(t=>({t,n:all.filter(c=>c.type===t).length})).filter(x=>x.n);
   const tot=tc.reduce((s,x)=>s+x.n,0)||1;const pc=['--sky','--pink','--teal','--amber'];
   let a0=-Math.PI/2;const R=70,cx=90,cy=90;
   const slices=tc.map((x,i)=>{const a1=a0+x.n/tot*Math.PI*2;const large=a1-a0>Math.PI?1:0;
-    const p=tc.length===1?`<circle cx="${cx}" cy="${cy}" r="${R}" fill="var(${pc[i]})"/>`:`<path d="M${cx} ${cy} L${(cx+R*Math.cos(a0)).toFixed(2)} ${(cy+R*Math.sin(a0)).toFixed(2)} A${R} ${R} 0 ${large} 1 ${(cx+R*Math.cos(a1)).toFixed(2)} ${(cy+R*Math.sin(a1)).toFixed(2)} Z" fill="var(${pc[i]})" stroke="var(--surface)" stroke-width="2"/>`;a0=a1;return p}).join('');
+    const p=tc.length===1?`<circle cx="${cx}" cy="${cy}" r="${R}" fill="var(${pc[i]})"/>`:`<path d="M${cx} ${cy}L${(cx+R*Math.cos(a0)).toFixed(2)} ${(cy+R*Math.sin(a0)).toFixed(2)}A${R} ${R} 0 ${large} 1 ${(cx+R*Math.cos(a1)).toFixed(2)} ${(cy+R*Math.sin(a1)).toFixed(2)}Z" fill="var(${pc[i]})" stroke="var(--surface)" stroke-width="2"/>`;a0=a1;return p}).join('');
   const pie=`<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="สัดส่วนประเภทงาน">${slices}<circle cx="${cx}" cy="${cy}" r="36" fill="var(--surface)"/><text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="16" style="fill:var(--fg);font-weight:600">${all.length}</text></svg>
     <div class="legend" style="flex-direction:column;gap:6px">${tc.map((x,i)=>`<span><i style="background:var(${pc[i]})"></i>${esc(x.t)} <b class="mono">${x.n}</b></span>`).join('')}</div></div>`;
   return `<div class="topbar"><div><h1>Dashboard</h1><div class="sub">งาน & การประเมิน</div></div></div>
@@ -656,7 +584,6 @@ function viewDash(){
     </div>`;
 }
 
-/* ================= Users ================= */
 function viewUsers(){
   const f=ui.uf;const k=(f.k||'').toLowerCase();
   const list=S.users.filter(u=>(!k||(u.id+u.name+u.email).toLowerCase().includes(k))&&(!f.role||u.role===f.role)&&(!f.act||String(u.active)===f.act));
@@ -674,8 +601,7 @@ function viewAudit(){
     </tbody></table></div>`;
 }
 
-/* ================= Modals ================= */
-function openModal(html,narrow){$('#modalRoot').innerHTML=`<div class="overlay" id="ov"><div class="modal${narrow?' narrow':''}" role="dialog" aria-modal="true">${html}</div></div>`;const f=$('#modalRoot').querySelector('input,select,textarea,button:not(.m-x)');if(f)f.focus()}
+function openModal(html,narrow){$('#modalRoot').innerHTML=`<div class="overlay" id="ov"><div class="modal ${narrow?' narrow':''}" role="dialog" aria-modal="true">${html}</div></div>`;const f=$('#modalRoot').querySelector('input,select,textarea,button:not(.m-x)');if(f)f.focus()}
 function closeModal(){$('#modalRoot').innerHTML='';render()}
 function head(sub,title){return `<div class="m-head"><div><small class="mono">${esc(sub)}</small><h2>${esc(title)}</h2></div><button class="m-x" type="button" data-close aria-label="ปิด">×</button></div>`}
 
@@ -686,7 +612,6 @@ function cardHtml(c){
   const u=me();const tabs=[['info','Status & Assignment info'],['assess','Assessment Link'],['hist','Status History']];
   let body='';
   if(cardTab==='info'){
-    const allowed=LANES.filter(l=>canMove(u,c,l.id).ok);
     const acts=[];
     if(c.status==='TBC'&&(isAdmin(u)||c.reporter===u.name))acts.push('<button class="btn primary sm" type="button" data-act="ready">เปลี่ยน TBC → Ready</button>');
     if(c.lane==='review'&&c.status!=='Cancel'&&isEval(u,c))acts.push('<button class="btn primary sm" type="button" data-act="assess">ส่งประเมิน (Review → Assessment)</button>');
@@ -695,14 +620,11 @@ function cardHtml(c){
     if(isAdmin(u))acts.push('<button class="btn sm danger" type="button" data-act="delete">ลบการ์ด</button>');
     const dur=c.readyAt&&c.deadline?Math.max(0,Math.round((new Date(c.deadline)-new Date(c.readyAt))/DAY))+' วัน':'-';
     const link=safeUrl(c.link);
-    // parent ref banner สำหรับ sub-card
-    const parentBanner=c.parentId?`<div class="parent-ref">🔗 Sub-card ของ <button class="linkbtn" style="color:var(--primary);font-weight:600" data-card="${esc(c.parentId)}">${esc(c.parentId)}</button> — ${esc(cardBy(c.parentId)?.title||'')}</div>`:'';
     body=`${acts.length?`<div class="actions">${acts.join('')}</div>`:''}<div id="inline"></div>
-    ${parentBanner}
     <div class="sect"><h4>Status & Assignment</h4><dl class="kv">
       <dt>Status</dt><dd>${chip(c.status)}${c.cancelReason?` <span class="hint">เหตุผล: ${esc(c.cancelReason)}</span>`:''}</dd>
       <dt>Lane</dt><dd>${esc(LANE_NAME[c.lane])}</dd><dt>Reporter Section</dt><dd>${esc(c.section)}</dd>
-      <dt>Language</dt><dd>${esc(c.languages.join(' / '))}</dd><dt>Type</dt><dd>${esc(c.type)}</dd>
+      <dt>Language</dt><dd>${esc(c.languages.join('/'))}</dd><dt>Type</dt><dd>${esc(c.type)}</dd>
       <dt>Assignee</dt><dd>${c.assignee?av(c.assignee)+' '+esc(c.assignee):'-'}</dd>
       <dt>Collaborator</dt><dd>${c.collaborators.map(n=>av(n)+' '+esc(n)).join('  ')||'-'}</dd>
       <dt>Reporter</dt><dd>${esc(c.reporter)} (${esc(c.section)})</dd><dt>Priority</dt><dd>${c.priority==='Urgent'?'<span class="urgent">URGENT</span>':'Normal'}</dd></dl></div>
@@ -711,7 +633,6 @@ function cardHtml(c){
       <dt>Updated At</dt><dd>${fmtDT(c.updatedAt)}</dd><dt>Deadline</dt><dd>${fmtD(c.deadline)}</dd><dt>Duration</dt><dd>${dur}</dd>
       <dt>Revision Round</dt><dd>${c.revision||0}</dd><dt>SharePoint Link</dt><dd>${link?`<a href="${esc(link)}" target="_blank" rel="noopener noreferrer">${esc(link)}</a>`:'-'}</dd>
       <dt>Evaluator</dt><dd>${esc(c.evaluator)}</dd><dt>Reporter Email</dt><dd>${esc(c.reporterEmail)}</dd><dt>Note</dt><dd>${esc(c.note||'-')}</dd></dl></div>
-    ${c.isParent&&c.subCards&&c.subCards.length?`<div class="sect"><h4>Sub-cards (${c.subCards.length} ภาษา)</h4><div class="sub-list">${subCardsOf(c).map(sc=>`<div class="sub-item" data-card="${esc(sc.id)}"><span class="sub-id">${esc(sc.id)}</span><span>${esc(c.languages.find(l=>LANG_TO_LANE[l]===sc.lane)||sc.languages[0]||'')}</span>${chip(sc.status)}<span style="flex:1"></span><span class="hint" style="font-size:11px">${esc(LANE_NAME[sc.lane])}</span></div>`).join('')}</div></div>`:''}
     <div class="sect"><h4>Comment</h4>${c.comments.map(x=>`<div class="comment"><b>${esc(x.user)}</b><span class="when">${ago(x.date)}</span><p>${renderComment(x.text)}</p></div>`).join('')||'<p class="hint">ยังไม่มีคอมเมนต์</p>'}
       <div class="cbox"><div class="mw"><textarea id="cmt" rows="2" maxlength="1000" style="width:100%" placeholder="พิมพ์ Comment หรือ @ชื่อ เพื่อ mention"></textarea><div class="men-dd" id="cmtDd"><div class="men-hd">mention ผู้ใช้</div><div id="cmtDdList"></div></div></div><button class="btn primary" type="button" data-act="comment">ส่ง</button></div>
       <p class="hint">พิมพ์ @ แล้วพิมพ์ชื่อ เพื่อ mention · ↑↓ เลือก · Enter ยืนยัน</p></div>`;
@@ -738,8 +659,6 @@ function bindCard(c){
   const root=$('#modalRoot');
   root.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{cardTab=b.dataset.tab;root.querySelector('.modal').innerHTML=cardHtml(c);bindCard(c)});
   const re=()=>{const cc=cardBy(c.id);if(!cc){closeModal();return}root.querySelector('.modal').innerHTML=cardHtml(cc);bindCard(cc);renderNav()};
-  // navigate ไปการ์ดอื่นจากภายใน modal (sub-card list หรือ parent ref)
-  root.querySelectorAll('[data-card]').forEach(el=>{if(el.tagName==='BUTTON'&&!el.dataset.act){el.onclick=e=>{e.stopPropagation();const target=cardBy(el.dataset.card);if(target){cardTab='info';root.querySelector('.modal').innerHTML=cardHtml(target);bindCard(target)}}}});
   root.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{
     const a=b.dataset.act;const inl=$('#inline');
     if(a==='ready'){toReady(c);re()}
@@ -767,32 +686,38 @@ function bindMentionDropdown(taId,ddId,listId){
   function renderPeople(q){
     const people=S.users.filter(u=>u.active&&(!q||u.name.toLowerCase().includes(q.toLowerCase())));
     selIdx=0;
-    lst.innerHTML=people.length?people.map((p,i)=>`<div class="men-mi${i===0?' on':''}" data-mn="${esc(p.name)}">${av(p.name)}<div style="flex:1;min-width:0"><div class="mn">${hl(p.name,q)}</div><div class="mr">${esc(roleLabel(p))}</div></div></div>`).join(''):'<div style="padding:10px 12px;font-size:13px;color:var(--muted)">ไม่พบชื่อ</div>';
+    lst.innerHTML=people.length?people.map((p,i)=>`<div class="men-mi ${i===0?'on':''}" data-mn="${esc(p.name)}">${av(p.name)}<div style="flex:1;min-width:0"><div class="mn">${hl(p.name,q)}</div><div class="mr">${esc(roleLabel(p))}</div></div></div>`).join(''):'<div style="padding:10px 12px;font-size:13px;color:var(--muted)">ไม่พบชื่อ</div>';
     lst.querySelectorAll('.men-mi').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();insert(el.dataset.mn)}));
   }
-  function insert(name){const v=ta.value,p=ta.selectionStart,b=v.slice(0,p),a=v.slice(p);const nb=b.replace(/@[\w฀-๿]*$/,'@'+name+' ');ta.value=nb+a;ta.focus();ta.selectionStart=ta.selectionEnd=nb.length;dd.classList.remove('show')}
+  function insert(name){const v=ta.value,p=ta.selectionStart,a=v.slice(p);const nb=v.slice(0,p).replace(/@[\w฀-๿]*$/,'@'+name+' ');ta.value=nb+a;ta.focus();ta.selectionStart=ta.selectionEnd=nb.length;dd.classList.remove('show')}
   ta.addEventListener('input',()=>{const q=getAt();if(q!==null){renderPeople(q);dd.classList.add('show')}else dd.classList.remove('show')});
   ta.addEventListener('keydown',e=>{if(!dd.classList.contains('show'))return;const items=lst.querySelectorAll('.men-mi');if(e.key==='ArrowDown'){e.preventDefault();selIdx=Math.min(selIdx+1,items.length-1);items.forEach((el,i)=>el.classList.toggle('on',i===selIdx))}else if(e.key==='ArrowUp'){e.preventDefault();selIdx=Math.max(selIdx-1,0);items.forEach((el,i)=>el.classList.toggle('on',i===selIdx))}else if(e.key==='Enter'){e.preventDefault();const active=lst.querySelector('.men-mi.on');if(active)insert(active.dataset.mn)}else if(e.key==='Escape')dd.classList.remove('show')});
   document.addEventListener('click',function mClose(e){if(!dd.contains(e.target)&&e.target!==ta)dd.classList.remove('show')});
 }
-function trByLangs(langs){
-  if(!langs||!langs.length)return translators();
+
+function trByLang(lang){
+  if(!lang)return translators();
   return translators().filter(u=>{
-    if(u.lang==='Other')return langs.some(l=>l==='VN'||l==='Other');
-    return langs.includes(u.lang);
+    if(u.lang==='Other')return lang==='VN'||lang==='Other';
+    return u.lang===lang;
   });
 }
 
 function openForm(c){
   const u=me();const isNew=!c;const nextId='TMS-'+String(S.seq+1).padStart(5,'0');
-  const v=c||{id:nextId,title:'',status:'TBC',languages:u.role==='Translator'?[u.lang]:[],type:'Document Translation',reporter:u.name,section:u.section[0]||'FLP',reporterEmail:u.email,assignee:'',collaborators:[],evaluator:u.role==='Translator'?'':u.name,note:'',priority:'Normal',deadline:'',link:''};
+  // Default language: Translator uses their lang, others default to EN
+  const defaultLang=u.role==='Translator'?u.lang:'EN';
+  const v=c||{id:nextId,title:'',status:'TBC',languages:[defaultLang],type:'Document Translation',reporter:u.name,section:u.section[0]||'FLP',reporterEmail:u.email,assignee:'',collaborators:[],evaluator:u.role==='Translator'?'':u.name,note:'',priority:'Normal',deadline:'',link:''};
+  const curLang=v.languages[0]||defaultLang;
   const evals=S.users.filter(x=>x.role!=='Translator'&&x.active).map(x=>x.name);
-  const initTr=trByLangs(v.languages);
+  const initTr=trByLang(curLang);
   openModal(head(v.id,isNew?'New Card':'แก้ไขการ์ด')+`<div class="m-body"><form id="cardForm" class="form" novalidate>
     <label class="l">id Card</label><input type="text" readonly value="${esc(v.id)}" class="mono">
     <label class="l" for="fTitle">Title <span class="req">*</span></label><input type="text" id="fTitle" maxlength="150" value="${esc(v.title)}"><span class="err" id="eTitle"></span>
     <label class="l" for="fStatus">Status <span class="req">*</span></label><select id="fStatus" ${isNew?'':'disabled'}>${opt(isNew?['TBC','Ready']:[v.status],v.status)}</select>
-    <label class="l">Language <span class="req">*</span></label><div class="checks">${LANGS.map(l=>`<label><input type="checkbox" name="lang" value="${l.v}" ${v.languages.includes(l.v)?'checked':''}${isNew&&u.role==='Translator'&&l.v!==u.lang?' disabled':''}> ${l.t}</label>`).join('')}</div><span class="err" id="eLang"></span>
+    <label class="l">Language <span class="req">*</span></label>
+    <div class="checks">${LANGS.map(l=>`<label><input type="radio" name="lang" value="${l.v}" ${(v.languages[0]===l.v)?'checked':''}${isNew&&u.role==='Translator'&&l.v!==u.lang?' disabled':''}> ${l.t}</label>`).join('')}</div>
+    <span class="err" id="eLang"></span>
     <label class="l" for="fType">Type <span class="req">*</span></label><select id="fType">${opt(TYPES,v.type)}</select>
     <label class="l">Reporter Name</label><input type="text" readonly value="${esc(v.reporter)}">
     <label class="l" for="fSec">Reporter Section <span class="req">*</span></label><select id="fSec">${opt(SECTIONS,v.section)}</select>
@@ -806,14 +731,16 @@ function openForm(c){
     <label class="l" for="fLink">SharePoint Link</label><input type="url" id="fLink" maxlength="500" placeholder="https://..." value="${esc(v.link)}"><span class="err" id="eLink"></span>
     <span></span><div class="m-foot" style="margin:0"><button class="btn" type="button" data-close>ยกเลิก</button><button class="btn primary" type="submit">Save</button></div>
   </form></div>`);
+
   /* ── Custom Dropdown state ── */
   let collabSelected=[...v.collaborators];
   function currentAsg(){return (document.getElementById('fAsg')||{}).value||''}
+  function currentLang(){const r=document.querySelector('input[name=lang]:checked');return r?r.value:''}
   function buildCollabPanel(people){
     const panel=document.getElementById('fCollabPanel');if(!panel)return;
     const asg=currentAsg();
     const list=people.filter(x=>x.name!==asg);
-    panel.innerHTML=list.length?list.map(x=>`<div class="dd-item"><input type="checkbox" id="fcc-${esc(x.name)}" value="${esc(x.name)}"${collabSelected.includes(x.name)?' checked':''}><label for="fcc-${esc(x.name)}">${esc(x.name)}</label><span class="lang-badge">${esc(x.lang)}</span></div>`).join(''):'<div style="padding:10px 14px;font-size:13px;color:var(--muted)">ไม่มีรายชื่อ</div>';
+    panel.innerHTML=list.length?list.map(x=>`<div class="dd-item"><input type="checkbox" id="fcc-${esc(x.name)}" value="${esc(x.name)}" ${collabSelected.includes(x.name)?'checked':''}><label for="fcc-${esc(x.name)}">${esc(x.name)}</label><span class="lang-badge">${esc(x.lang)}</span></div>`).join(''):'<div style="padding:10px 14px;font-size:13px;color:var(--muted)">ไม่มีรายชื่อ</div>';
     panel.querySelectorAll('input').forEach(cb=>cb.addEventListener('change',()=>{collabSelected=[...panel.querySelectorAll('input:checked')].map(i=>i.value);updateCollabLabel()}));
   }
   function updateCollabLabel(){
@@ -824,73 +751,47 @@ function openForm(c){
   }
   const collabBtn=document.getElementById('fCollabBtn');
   const collabPanel=document.getElementById('fCollabPanel');
-  function currentLangPeople(){return trByLangs([...document.querySelectorAll('input[name=lang]:checked')].map(x=>x.value))}
-  collabBtn.addEventListener('click',e=>{e.stopPropagation();const open=collabPanel.classList.toggle('open');collabBtn.classList.toggle('open',open);if(open)buildCollabPanel(currentLangPeople())});
+  collabBtn.addEventListener('click',e=>{e.stopPropagation();const open=collabPanel.classList.toggle('open');collabBtn.classList.toggle('open',open);if(open)buildCollabPanel(trByLang(currentLang()))});
   document.addEventListener('click',function closeCollab(e){if(!document.getElementById('fCollabWrap')?.contains(e.target)){collabPanel.classList.remove('open');collabBtn.classList.remove('open')}});
-  /* เมื่อ Assignee เปลี่ยน → ล้างชื่อนั้นออกจาก collabSelected + rebuild panel */
   document.getElementById('fAsg').addEventListener('change',()=>{
     collabSelected=collabSelected.filter(n=>n!==currentAsg());
-    if(collabPanel.classList.contains('open'))buildCollabPanel(currentLangPeople());
+    if(collabPanel.classList.contains('open'))buildCollabPanel(trByLang(currentLang()));
     updateCollabLabel();
   });
   updateCollabLabel();
-  /* sub-card preview เมื่อเลือก 2+ ภาษา */
-  function updateSubPreview(){
-    const g=id=>document.getElementById(id);
-    const langs=[...document.querySelectorAll('input[name=lang]:checked')].map(x=>x.value);
-    let prev=g('fSubPreview');
-    if(isNew&&langs.length>=2){
-      if(!prev){prev=document.createElement('div');prev.id='fSubPreview';prev.className='sub-preview';// insert after lang checks
-      const langField=document.querySelector('.checks');if(langField)langField.closest('label')?.after(prev)||(langField.parentNode&&langField.parentNode.after?langField.parentNode.after(prev):langField.after(prev))||g('eLang').after(prev)}
-      const subIds=langs.map(l=>nextId+'-'+l);
-      prev.innerHTML=`<h5>🔀 Multi-language — ระบบจะสร้าง Sub-cards อัตโนมัติ</h5><ul>${subIds.map(id=>`<li>${esc(id)}</li>`).join('')}</ul><div style="font-size:11px;color:var(--muted);margin-top:4px">Parent card อยู่ใน To Do · Sub-cards อยู่ในเลนภาษาของตัวเอง</div>`;
-    }else{if(prev)prev.remove()}
-  }
-  /* bind language checkboxes → filter Assignee + Collaborator dropdown */
-  document.querySelectorAll('input[name=lang]').forEach(cb=>{
-    cb.addEventListener('change',()=>{
-      const langs=[...document.querySelectorAll('input[name=lang]:checked')].map(x=>x.value);
-      const filtered=trByLangs(langs);
+
+  /* เมื่อเลือก language (radio) → filter Assignee + Collaborator dropdown */
+  document.querySelectorAll('input[name=lang]').forEach(rb=>{
+    rb.addEventListener('change',()=>{
+      const lang=currentLang();
+      const filtered=trByLang(lang);
       const g=id=>document.getElementById(id);
       const curAsg=g('fAsg').value;
-      g('fAsg').innerHTML=`<option value="">— ยังไม่ระบุ —</option>`+filtered.map(x=>`<option value="${esc(x.name)}"${x.name===curAsg?' selected':''}>${esc(x.name)}</option>`).join('');
+      g('fAsg').innerHTML=`<option value="">— ยังไม่ระบุ —</option>`+filtered.map(x=>`<option value="${esc(x.name)}" ${x.name===curAsg?'selected':''}>${esc(x.name)}</option>`).join('');
       collabSelected=collabSelected.filter(n=>filtered.some(x=>x.name===n));
       if(collabPanel.classList.contains('open'))buildCollabPanel(filtered);
       updateCollabLabel();
-      updateSubPreview();
     });
   });
-  if(isNew)updateSubPreview();
+
   $('#cardForm').onsubmit=e=>{e.preventDefault();
-    const g=id=>document.getElementById(id);['eTitle','eLang','eEval','eDl','eLink'].forEach(i=>g(i).textContent='');
-    const title=g('fTitle').value.trim(),langs=[...document.querySelectorAll('input[name=lang]:checked')].map(x=>x.value),ev=g('fEval').value,dl=g('fDl').value,link=g('fLink').value.trim();
-    let ok=true;if(!title){g('eTitle').textContent='กรอกชื่องาน';ok=false}if(!langs.length){g('eLang').textContent='เลือกอย่างน้อย 1 ภาษา';ok=false}if(!ev){g('eEval').textContent='เลือก Evaluator';ok=false}if(!dl){g('eDl').textContent='ระบุ Deadline';ok=false}
+    const g=id=>document.getElementById(id);
+    ['eTitle','eLang','eEval','eDl','eLink'].forEach(i=>g(i).textContent='');
+    const title=g('fTitle').value.trim();
+    const langRadio=document.querySelector('input[name=lang]:checked');
+    const langs=langRadio?[langRadio.value]:[];
+    const ev=g('fEval').value,dl=g('fDl').value,link=g('fLink').value.trim();
+    let ok=true;
+    if(!title){g('eTitle').textContent='กรอกชื่องาน';ok=false}
+    if(!langs.length){g('eLang').textContent='เลือก 1 ภาษา';ok=false}
+    if(!ev){g('eEval').textContent='เลือก Evaluator';ok=false}
+    if(!dl){g('eDl').textContent='ระบุ Deadline';ok=false}
     if(link&&!safeUrl(link)){g('eLink').textContent='ลิงก์ต้องขึ้นต้นด้วย https://';ok=false}
     if(!ok)return;
     const data={title,languages:langs,type:g('fType').value,section:g('fSec').value,assignee:g('fAsg').value,collaborators:collabSelected.filter(n=>n!==g('fAsg').value),evaluator:ev,note:g('fNote').value.trim(),priority:g('fPri').value,deadline:new Date(dl+'T17:00:00').toISOString(),link};
-    if(isNew){const st=g('fStatus').value;S.seq++;
-      if(langs.length>=2){
-        // สร้าง Parent card
-        const pid=nextId;
-        const pc=Object.assign({id:pid,lane:'todo',status:st,reporter:u.name,reporterEmail:u.email,createdAt:nowISO(),readyAt:st==='Ready'?nowISO():'',updatedAt:nowISO(),doneAt:'',revision:0,history:[],comments:[],assessment:null,assessLink:'',cancelReason:'',isParent:true,subCards:langs.map(l=>pid+'-'+l)},data,{languages:langs});
-        hist(pc,`สร้าง Parent card (${st}) + ${langs.length} Sub-cards`);S.cards.push(pc);log('สร้าง Parent card',pc.id);
-        // สร้าง Sub-cards ทีละภาษา
-        langs.forEach(lang=>{
-          const sid=pid+'-'+lang;
-          const slane=LANG_TO_LANE[lang]||'other';
-          const sc=Object.assign({},data,{id:sid,lane:slane,languages:[lang],status:st==='Ready'?'Ready':'TBC',reporter:u.name,reporterEmail:u.email,createdAt:nowISO(),readyAt:st==='Ready'?nowISO():'',updatedAt:nowISO(),doneAt:'',revision:0,history:[],comments:[],assessment:null,assessLink:'',cancelReason:'',isParent:false,parentId:pid,subCards:[],assignee:'',collaborators:[]});
-          hist(sc,`สร้าง Sub-card (${lang})`);S.cards.push(sc);log('สร้าง Sub-card',sc.id);
-        });
-        save();toast(`สร้าง ${pid} + ${langs.length} Sub-cards แล้ว`);closeModal();
-      }else{
-        const nc=Object.assign({id:nextId,lane:'todo',status:st,reporter:u.name,reporterEmail:u.email,createdAt:nowISO(),readyAt:st==='Ready'?nowISO():'',updatedAt:nowISO(),doneAt:'',revision:0,history:[],comments:[],assessment:null,assessLink:'',cancelReason:'',isParent:false,parentId:null,subCards:[]},data);
-        S.cards.push(nc);hist(nc,`สร้างการ์ด (${st})`);log('สร้างการ์ด',nc.id);notify(team(nc),st==='Ready'?'งานใหม่ถูก assign ให้คุณแล้ว — ไฟล์พร้อมแปล':'งานใหม่ถูก assign ให้คุณแล้ว',nc.id);save();toast(`สร้าง ${nc.id} แล้ว`);closeModal();
-      }
-    }
-    else{Object.assign(c,data);hist(c,'แก้ไขรายละเอียดการ์ด');log('แก้ไขการ์ด',c.id);
-      // propagate deadline/section/note/evaluator ไป sub-cards ถ้าเป็น parent
-      if(c.isParent){subCardsOf(c).forEach(sc=>{sc.deadline=data.deadline;sc.section=data.section;sc.note=data.note;sc.evaluator=data.evaluator;sc.priority=data.priority;hist(sc,'อัปเดตตาม Parent card')})}
-      save();toast('บันทึกแล้ว');openCard(c.id)}
+    if(isNew){const st=g('fStatus').value;S.seq++;const nc=Object.assign({id:nextId,lane:'todo',status:st,reporter:u.name,reporterEmail:u.email,createdAt:nowISO(),readyAt:st==='Ready'?nowISO():'',updatedAt:nowISO(),doneAt:'',revision:0,history:[],comments:[],assessment:null,assessLink:'',cancelReason:''},data);
+      S.cards.push(nc);hist(nc,`สร้างการ์ด (${st})`);log('สร้างการ์ด',nc.id);notify(team(nc),st==='Ready'?'งานใหม่ถูก assign ให้คุณแล้ว — ไฟล์พร้อมแปล':'งานใหม่ถูก assign ให้คุณแล้ว',nc.id);save();toast(`สร้าง ${nc.id} แล้ว`);closeModal()}
+    else{Object.assign(c,data);hist(c,'แก้ไขรายละเอียดการ์ด');log('แก้ไขการ์ด',c.id);save();toast('บันทึกแล้ว');openCard(c.id)}
   };
 }
 
@@ -930,7 +831,6 @@ function openUser(u){
     save();toast('บันทึกบัญชีแล้ว');closeModal()};
 }
 
-/* ================= Binding ================= */
 function bindView(){
   const m=$('#main');
   m.querySelectorAll('[data-fset]').forEach(fs=>{const key={bf:'f',af:'acf',df:'dashf',uf:'uf'}[fs.dataset.fset];
@@ -942,7 +842,6 @@ function bindView(){
   m.querySelectorAll('[data-ntab]').forEach(b=>b.onclick=()=>{ui.notiTab=b.dataset.ntab;render()});
   const ra=$('#readAll');if(ra)ra.onclick=()=>{myNotis().forEach(n=>n.read[S.me]=true);save();render()};
   m.querySelectorAll('[data-noti]').forEach(el=>{const go=()=>{const n=S.notis.find(x=>x.id===el.dataset.noti);n.read[S.me]=true;save();renderNav();if(cardBy(n.card))openCard(n.card);else{toast('การ์ดนี้ถูกลบแล้ว',true);render()}};el.onclick=go;el.onkeydown=e=>{if(e.key==='Enter')go()}});
-  // drag & drop
   let dragId=null;
   m.querySelectorAll('.card[draggable="true"]').forEach(el=>{
     el.addEventListener('dragstart',e=>{dragId=el.dataset.card;el.classList.add('dragging');try{e.dataTransfer.setData('text/plain',dragId);e.dataTransfer.effectAllowed='move'}catch(_){}
@@ -956,7 +855,6 @@ function bindView(){
 }
 $('#nav').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(!b)return;ui.view=b.dataset.view;try{localStorage.setItem(STORE_KEY+'-view',ui.view)}catch(_){}render()});
 $('#persona').addEventListener('change',e=>{S.me=e.target.value;save();render();toast('สลับเป็น '+S.me+' แล้ว')});
-/* Light / Dark toggle (remembered per browser; follows the OS until chosen) */
 const THEME_KEY=STORE_KEY+'-theme';
 function effTheme(){const a=document.documentElement.getAttribute('data-theme');if(a)return a;return window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
 function paintTheme(){const t=effTheme();document.querySelectorAll('[data-theme-set]').forEach(b=>{const on=b.dataset.themeSet===t;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)})}
