@@ -343,7 +343,7 @@ function seed(){
     {id:'0000000000008',name:'คุณเพื่อน',email:'puan@example.com',role:'Translator',lang:'Other',section:[],active:true,mobile:'',line:'',created:iso(2026,9,3),last:iso(2026,10,11,9)}
   ];
   const H=(user,lane,action,date)=>({user,lane,action,date});
-  const base=(o)=>Object.assign({languages:['EN'],type:'Document Translation',reporter:'คุณนภา',section:'FLP',reporterEmail:'napa@example.com',assignee:'',collaborators:[],evaluator:'คุณนภา',note:'',priority:'Normal',deadline:'',link:'',createdAt:iso(2026,10,1),readyAt:'',updatedAt:iso(2026,10,1),doneAt:'',revision:0,history:[],comments:[],assessment:null,assessLink:'',cancelReason:''},o);
+  const base=(o)=>Object.assign({languages:['EN'],type:'Document Translation',reporter:'คุณนภา',section:'FLP',reporterEmail:'napa@example.com',assignee:'',collaborators:[],evaluator:'คุณนภา',note:'',priority:'Normal',deadline:'',link:'',createdAt:iso(2026,10,1),readyAt:'',updatedAt:iso(2026,10,1),doneAt:'',revision:0,history:[],comments:[],assessment:null,assessLink:'',cancelReason:'',cancelBy:''},o);
   const cards=[
     base({id:'TMS-00001',title:'FLP Module 3 — แปลสไลด์ Q3',lane:'todo',status:'Ready',languages:['EN'],assignee:'Anna',priority:'Urgent',deadline:iso(2026,10,20),createdAt:iso(2026,10,10),readyAt:iso(2026,10,14,9),link:'https://example.sharepoint.com/sites/flp/module3',history:[H('คุณนภา','To Do','สร้างการ์ด (TBC)',iso(2026,10,10)),H('คุณนภา','To Do','TBC → Ready',iso(2026,10,14,9))]}),
     base({id:'TMS-00002',title:'LDP Leadership Guide Ch.2',lane:'todo',status:'TBC',languages:['CN'],reporter:'คุณกิ่ง',section:'LDP',reporterEmail:'king@example.com',evaluator:'คุณกิ่ง',assignee:'Sara',deadline:iso(2026,10,31),createdAt:iso(2026,10,12),history:[H('คุณกิ่ง','To Do','สร้างการ์ด (TBC)',iso(2026,10,12))]}),
@@ -370,7 +370,7 @@ function seed(){
     ['PLP Policy Brief','CN','Document Translation','มาลี','PLP',9,30,3,'ช้ากว่ากำหนด']
   ];
   old.forEach((o,i)=>{const n=10+i;const done=iso(2026,o[5],o[6]);cards.push(base({id:'TMS-'+String(n).padStart(5,'0'),title:o[0],lane:'done',status:'Done',languages:[o[1]],type:o[2],assignee:o[3],section:o[4],deadline:done,createdAt:new Date(new Date(done)-12*DAY).toISOString(),readyAt:new Date(new Date(done)-11*DAY).toISOString(),doneAt:done,updatedAt:done,assessLink:'FORM-'+n,assessment:{score:o[7],timing:o[8],suggest:'',by:'คุณนภา',date:done},history:[H('คุณนภา','Done','ประเมินเสร็จ → Done',done)]}))});
-  cards.push(base({id:'TMS-00021',title:'KM Newsletter ฉบับ ก.ย.',lane:'todo',status:'Cancel',languages:['EN'],section:'KM',reporter:'คุณกิ่ง',reporterEmail:'king@example.com',evaluator:'คุณกิ่ง',cancelReason:'ทีม KM ยกเลิกการจัดทำฉบับนี้',createdAt:iso(2026,9,5),updatedAt:iso(2026,9,8),history:[H('คุณกิ่ง','To Do','Cancel: ทีม KM ยกเลิกการจัดทำฉบับนี้',iso(2026,9,8))]}));
+  cards.push(base({id:'TMS-00021',title:'KM Newsletter ฉบับ ก.ย.',lane:'todo',status:'Cancel',languages:['EN'],section:'KM',reporter:'คุณกิ่ง',reporterEmail:'king@example.com',evaluator:'คุณกิ่ง',cancelReason:'ทีม KM ยกเลิกการจัดทำฉบับนี้',cancelBy:'คุณกิ่ง',createdAt:iso(2026,9,5),updatedAt:iso(2026,9,8),history:[H('คุณกิ่ง','To Do','Cancel: ทีม KM ยกเลิกการจัดทำฉบับนี้',iso(2026,9,8))]}));
   const notis=[
     {id:'n1',to:['Anna'],text:'คุณนภา กล่าวถึงคุณ : อัปเดตไฟล์ Final แล้วนะคะ @Anna รบกวนตรวจสอบหน่อย',card:'TMS-00005',date:iso(2026,10,14,9),read:{}},
     {id:'n2',to:['Anna'],text:'ไฟล์ final แล้ว! สามารถเริ่มแปลได้',card:'TMS-00001',date:iso(2026,10,14,9),read:{}},
@@ -458,7 +458,7 @@ function moveCard(c,to){
   const label=`${LANE_NAME[from]} → ${LANE_NAME[to]}`;
   if(['en','cn','other'].includes(to)){c.status='On Going';if(!c.assignee&&me().role==='Translator')c.assignee=S.me}
   else if(to==='review'){c.status='Review';notify([c.evaluator],from==='correction'?'แก้ไขเสร็จแล้วพร้อม Review':'แปลเสร็จแล้วพร้อม Review',c.id)}
-  else if(to==='correction'){c.status='Edit';c.revision=(c.revision||0)+1;notify(team(c),'งานต้องการการแก้ไข กรุณาตรวจสอบ',c.id)}
+  else if(to==='correction'){c.status='Edit';c.revision=(c.revision||0)+1;notify([...team(c),c.reporter,c.evaluator],'งานต้องการการแก้ไข กรุณาตรวจสอบ',c.id)}
   else if(to==='done'){c.status='Done';c.doneAt=c.doneAt||nowISO()}
   else if(to==='todo'){c.status=c.readyAt?'Ready':'TBC'}
   hist(c,label);log(label,c.id);save();toast(`ย้าย ${c.id} ไป ${LANE_NAME[to]} แล้ว (Status: ${c.status})`);return true;
@@ -466,7 +466,7 @@ function moveCard(c,to){
 function toReady(c){c.status='Ready';c.readyAt=nowISO();hist(c,'TBC → Ready');log('TBC → Ready',c.id);notify(team(c),'ไฟล์ final แล้ว! สามารถเริ่มแปลได้',c.id);save();toast('เปลี่ยนเป็น Ready แล้ว และแจ้งเตือนผู้รับงานแล้ว')}
 function toAssessment(c){c.lane='assessment';c.status='Assessment';c.assessLink='FORM-'+c.id.slice(4);hist(c,'Review → Assessment');log('Review → Assessment',c.id);notify([c.evaluator],'พร้อมประเมิน — ลิงก์ประเมินถูกส่งให้คุณแล้ว',c.id);save();toast('ส่งเข้า Assessment แล้ว ระบบสร้างลิงก์ประเมินให้ Evaluator')}
 function submitAssessment(c,a){c.assessment=Object.assign(a,{by:S.me,date:nowISO()});c.lane='done';c.status='Done';c.doneAt=nowISO();hist(c,'Submit แบบประเมิน → Done');log('Submit แบบประเมิน',c.id);notify([...team(c),c.reporter],'งานเสร็จสมบูรณ์',c.id);save();toast('ส่งแบบประเมินแล้ว การ์ดย้ายไป Done อัตโนมัติ')}
-function cancelCard(c,reason){c.status='Cancel';c.cancelReason=reason;hist(c,'Cancel: '+reason);log('Cancel',c.id);notify([...team(c),c.reporter],'การ์ดถูก Cancel — '+reason,c.id);save();toast(`Cancel ${c.id} แล้ว ค้นหาได้ใน All Cards`)}
+function cancelCard(c,reason){c.status='Cancel';c.cancelReason=reason;c.cancelAt=nowISO();c.cancelBy=S.me;hist(c,'Cancel: '+reason);log('Cancel',c.id);notify([...team(c),c.reporter],'การ์ดถูก Cancel — '+reason,c.id);save();toast(`Cancel ${c.id} แล้ว ค้นหาได้ใน All Cards`)}
 function deleteCard(c){S.cards=S.cards.filter(x=>x.id!==c.id);log('ลบการ์ด',c.id);save();toast(`ลบ ${c.id} ออกจากระบบแล้ว`)}
 function addComment(c,text){c.comments.push({user:S.me,text,date:nowISO()});c.updatedAt=nowISO();const mentioned=S.users.filter(u=>text.includes('@'+u.name)).map(u=>u.name);notify(mentioned,`${S.me} กล่าวถึงคุณ : ${text}`,c.id);notify([...team(c),c.reporter].filter(n=>!mentioned.includes(n)),`${S.me} คอมเมนต์ : ${text}`,c.id);log('Comment',c.id);save()}
 
@@ -549,8 +549,8 @@ function viewAll(){
   const list=filterCards(S.cards.filter(c=>c.lane==='done'||c.status==='Cancel'),ui.acf).sort((a,b)=>new Date(b.doneAt||b.updatedAt)-new Date(a.doneAt||a.updatedAt));
   return `<div class="topbar"><div><h1>All Cards</h1><div class="sub">Search & Archive — งาน Done และ Cancel ทั้งหมด ค้นหาได้ตลอด</div></div></div>
     ${filterBar(ui.acf,['k','lang','sec','asg','type','ev'],'af')}
-    <div class="panel tbl-wrap"><table><thead><tr><th>Card</th><th>Title Name</th><th>Language</th><th>Assignee</th><th>Status</th><th>Score</th><th>Done Date</th></tr></thead><tbody>
-    ${list.map(c=>`<tr class="click" data-card="${esc(c.id)}" tabindex="0"><td class="mono">${esc(c.id)}</td><td>${esc(c.title)}</td><td>${esc(c.languages.join(', '))}</td><td>${esc(c.assignee||'-')}</td><td>${chip(c.status)}</td><td class="mono">${c.assessment?c.assessment.score+'/5':'-'}</td><td class="mono">${c.status==='Cancel'?'-':fmtD(c.doneAt)}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">ไม่พบการ์ดตามเงื่อนไข</td></tr>'}
+    <div class="panel tbl-wrap"><table><thead><tr><th>Card</th><th>Title Name</th><th>Language</th><th>Assignee</th><th>Status</th><th>Score</th><th>Done / Cancel Date</th><th>Cancelled by</th></tr></thead><tbody>
+    ${list.map(c=>`<tr class="click" data-card="${esc(c.id)}" tabindex="0"><td class="mono">${esc(c.id)}</td><td>${esc(c.title)}</td><td>${esc(c.languages.join(', '))}</td><td>${esc(c.assignee||'-')}</td><td>${chip(c.status)}</td><td class="mono">${c.assessment?c.assessment.score+'/5':'-'}</td><td class="mono">${c.status==='Cancel'?fmtD(c.cancelAt)||'-':fmtD(c.doneAt)}</td><td>${c.status==='Cancel'?esc(c.cancelBy||'-'):'-'}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">ไม่พบการ์ดตามเงื่อนไข</td></tr>'}
     </tbody></table></div>`;
 }
 
