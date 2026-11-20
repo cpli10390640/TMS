@@ -471,14 +471,26 @@ function renderNav(){
 }
 function render(){renderNav();const v={board:viewBoard,notis:viewNotis,dash:viewDash,all:viewAll,users:viewUsers,audit:viewAudit}[ui.view]||viewBoard;$('#main').innerHTML=v();bindView()}
 
+function dlRange(f){
+  const t=new Date();t.setHours(0,0,0,0);
+  const iso=d=>d.toLocaleDateString('en-CA');
+  if(f.dl_chip==='today')return{from:iso(t),to:iso(t)};
+  if(f.dl_chip==='7d'){const e=new Date(t);e.setDate(e.getDate()+7);return{from:iso(t),to:iso(e)};}
+  if(f.dl_chip==='30d'){const e=new Date(t);e.setDate(e.getDate()+30);return{from:iso(t),to:iso(e)};}
+  if(f.dl_chip==='month'){const e=new Date(t.getFullYear(),t.getMonth()+1,0);return{from:iso(new Date(t.getFullYear(),t.getMonth(),1)),to:iso(e)};}
+  if(f.dl_chip==='overdue'){const y=new Date(t.getTime()-86400000);return{from:'',to:iso(y)};}
+  if(f.dl_chip==='custom')return{from:f.dl_from||'',to:f.dl_to||''};
+  return{from:'',to:''};
+}
 function filterCards(list,f){
   const k=(f.k||'').trim().toLowerCase();
+  const dl=dlRange(f);
   return list.filter(c=>(!k||(c.id+' '+c.title+' '+c.note).toLowerCase().includes(k))
     &&(!f.lang||c.languages.includes(f.lang))&&(!f.sec||c.section===f.sec)&&(!f.pri||c.priority===f.pri)
     &&(!f.asg||c.assignee===f.asg||c.collaborators.includes(f.asg))&&(!f.type||c.type===f.type)
     &&(!f.ev||c.evaluator===f.ev)&&(f.rev===undefined||f.rev===''||String(c.revision||0)===f.rev)
-    &&(!f.dl_from||!c.deadline||new Date(c.deadline)>=new Date(f.dl_from))
-    &&(!f.dl_to||!c.deadline||new Date(c.deadline)<=new Date(f.dl_to+'T23:59:59')))
+    &&(!dl.from||!c.deadline||new Date(c.deadline)>=new Date(dl.from))
+    &&(!dl.to||!c.deadline||new Date(c.deadline)<=new Date(dl.to+'T23:59:59')))
 }
 function filterBar(f,keys,prefix){
   const evals=S.users.filter(u=>u.role!=='Translator').map(u=>u.name);
@@ -488,7 +500,7 @@ function filterBar(f,keys,prefix){
     sec:`<label>Reporter Section<select id="${prefix}-sec" data-f="sec">${opt(SECTIONS,f.sec,'All')}</select></label>`,
     pri:`<label>Priority<select id="${prefix}-pri" data-f="pri">${opt(PRIORITIES,f.pri,'All')}</select></label>`,
     asg:`<label>Assignee<select id="${prefix}-asg" data-f="asg">${opt(translators().map(u=>u.name),f.asg,'All')}</select></label>`,
-    dl:`<div style="position:relative"><button type="button" data-dl-toggle="${prefix}" style="display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:8px;border:1.5px solid ${(f.dl_from||f.dl_to)?'var(--primary)':'var(--line-2)'};background:${(f.dl_from||f.dl_to)?'var(--primary-soft)':'var(--surface-2)'};color:${(f.dl_from||f.dl_to)?'var(--primary)':'var(--muted)'};font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap">📅 Deadline${(f.dl_from||f.dl_to)?' ✓':''} <span style="font-size:10px;display:inline-block;transform:${(f.dl_open||f.dl_from||f.dl_to)?'rotate(180deg)':'none'}">▾</span></button><div style="display:${(f.dl_open||f.dl_from||f.dl_to)?'flex':'none'};position:absolute;top:calc(100% + 6px);left:0;z-index:200;gap:10px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:0 4px 20px color-mix(in srgb,#000 15%,transparent);min-width:320px"><label style="display:grid;gap:4px;font-size:11px;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">ตั้งแต่<input type="date" id="${prefix}-dl_from" data-f="dl_from" value="${esc(f.dl_from||'')}" style="min-width:140px"></label><span style="color:var(--faint);padding-top:16px">—</span><label style="display:grid;gap:4px;font-size:11px;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">ถึง<input type="date" id="${prefix}-dl_to" data-f="dl_to" value="${esc(f.dl_to||'')}" style="min-width:140px"></label>${(f.dl_from||f.dl_to)?`<button type="button" data-dl-clear="${prefix}" style="padding:5px 12px;border:none;background:color-mix(in srgb,var(--neg) 15%,transparent);color:var(--neg);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">ล้าง</button>`:''}</div></div>`,
+    dl:(()=>{const AC=f.dl_chip||'';const chips=[{v:'today',l:'วันนี้'},{v:'7d',l:'7 วัน'},{v:'30d',l:'30 วัน'},{v:'month',l:'เดือนนี้'},{v:'overdue',l:'⚠ Overdue'},{v:'custom',l:'📅 กำหนดเอง'}];const chipsHtml=chips.map(c=>`<button type="button" data-dl-chip="${prefix}" data-chip-val="${c.v}" style="padding:4px 11px;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid ${AC===c.v?'var(--primary)':'var(--line-2)'};background:${AC===c.v?'var(--primary)':'var(--surface-2)'};color:${AC===c.v?'#fff':'var(--muted)'};font-family:inherit;white-space:nowrap;transition:.12s">${c.l}</button>`).join('');const clearHtml=AC?`<button type="button" data-dl-clear="${prefix}" style="padding:4px 10px;border:none;background:color-mix(in srgb,var(--neg) 15%,transparent);color:var(--neg);border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">✕ ล้าง</button>`:'';const customHtml=AC==='custom'?`<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px"><label style="display:grid;gap:3px;font-size:11px;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">ตั้งแต่<input type="date" id="${prefix}-dl_from" data-f="dl_from" value="${esc(f.dl_from||'')}" style="min-width:130px"></label><span style="color:var(--faint);font-size:14px">—</span><label style="display:grid;gap:3px;font-size:11px;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">ถึง<input type="date" id="${prefix}-dl_to" data-f="dl_to" value="${esc(f.dl_to||'')}" style="min-width:130px"></label></div>`:'';return `<div style="grid-column:1/-1"><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">📅 Deadline</span>${chipsHtml}${clearHtml}</div>${customHtml}</div>`;})(),
     st:`<label>Status<select id="${prefix}-st" data-f="st">${opt(STATUSES.filter(s=>s!=='Cancel'),f.st,'All')}</select></label>`,
     type:`<label>Type<select id="${prefix}-type" data-f="type">${opt(TYPES,f.type,'All')}</select></label>`,
     lane:`<label>Lane<select id="${prefix}-lane" data-f="lane">${opt(LANES.map(l=>({v:l.id,t:l.name})),f.lane,'All')}</select></label>`,
@@ -841,8 +853,8 @@ function bindView(){
   m.querySelectorAll('[data-card]').forEach(el=>{el.addEventListener('click',()=>openCard(el.dataset.card));if(el.tagName==='TR')el.addEventListener('keydown',e=>{if(e.key==='Enter')openCard(el.dataset.card)})});
   const add=$('#addCard');if(add)add.onclick=()=>openForm(null);
   const fkMap={bf:'f',af:'acf',df:'dashf'};
-  m.querySelectorAll('[data-dl-toggle]').forEach(btn=>{btn.onclick=()=>{const k=fkMap[btn.dataset.dlToggle];if(k){ui[k].dl_open=!ui[k].dl_open;render()}}});
-  m.querySelectorAll('[data-dl-clear]').forEach(btn=>{btn.onclick=()=>{const k=fkMap[btn.dataset.dlClear];if(k){ui[k].dl_from='';ui[k].dl_to='';ui[k].dl_open=false;render()}}});
+  m.querySelectorAll('[data-dl-clear]').forEach(btn=>{btn.onclick=()=>{const k=fkMap[btn.dataset.dlClear];if(k){ui[k].dl_from='';ui[k].dl_to='';ui[k].dl_chip='';render()}}});
+  m.querySelectorAll('[data-dl-chip]').forEach(btn=>{btn.onclick=()=>{const k=fkMap[btn.dataset.dlChip];if(k){ui[k].dl_chip=ui[k].dl_chip===btn.dataset.chipVal?'':btn.dataset.chipVal;render()}}});
   const nu=$('#newUser');if(nu)nu.onclick=()=>openUser(null);
   m.querySelectorAll('[data-edituser]').forEach(b=>b.onclick=()=>openUser(S.users.find(x=>x.id===b.dataset.edituser)));
   m.querySelectorAll('[data-ntab]').forEach(b=>b.onclick=()=>{ui.notiTab=b.dataset.ntab;render()});
