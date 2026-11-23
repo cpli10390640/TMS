@@ -503,7 +503,7 @@ function filterCards(list,f){
     &&ms(f.sec,c.section)&&ms(f.pri,c.priority)
     &&(!f.asg||!f.asg.length||f.asg.some(a=>c.assignee===a||c.collaborators.includes(a)))
     &&ms(f.type,c.type)&&ms(f.ev,c.evaluator)
-    &&(f.rev===undefined||f.rev===''||String(c.revision||0)===f.rev)
+    &&ms(f.rev,String(c.revision||0))
     &&(!f.st||!f.st.length||ms(f.st,c.status))
     &&(!dl.from||!c.deadline||new Date(c.deadline)>=new Date(dl.from))
     &&(!dl.to||!c.deadline||new Date(c.deadline)<=new Date(dl.to+'T23:59:59')))
@@ -525,10 +525,10 @@ function filterBar(f,keys,prefix){
     asg:msField(f,'asg',translators().map(u=>u.name),prefix,'Assignee'),
     dl:(()=>{const AC=f.dl_chip||'';const chips=[{v:'today',l:'วันนี้'},{v:'7d',l:'7 วัน'},{v:'30d',l:'30 วัน'},{v:'month',l:'เดือนนี้'},{v:'overdue',l:'⚠ Overdue'},{v:'custom',l:'📅 กำหนดเอง'}];const chipsHtml=chips.map(c=>`<button type="button" data-dl-chip="${prefix}" data-chip-val="${c.v}" style="padding:4px 11px;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid ${AC===c.v?'var(--primary)':'var(--line-2)'};background:${AC===c.v?'var(--primary)':'var(--surface-2)'};color:${AC===c.v?'#fff':'var(--muted)'};font-family:inherit;white-space:nowrap;transition:.12s">${c.l}</button>`).join('');const clearHtml=AC?`<button type="button" data-dl-clear="${prefix}" style="padding:4px 10px;border:none;background:color-mix(in srgb,var(--neg) 15%,transparent);color:var(--neg);border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">✕ ล้าง</button>`:'';const customHtml=AC==='custom'?`<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px"><label style="display:grid;gap:3px;font-size:11px;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">ตั้งแต่<input type="date" id="${prefix}-dl_from" data-f="dl_from" value="${esc(f.dl_from||'')}" style="min-width:130px"></label><span style="color:var(--faint);font-size:14px">—</span><label style="display:grid;gap:3px;font-size:11px;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">ถึง<input type="date" id="${prefix}-dl_to" data-f="dl_to" value="${esc(f.dl_to||'')}" style="min-width:130px"></label></div>`:'';return `<div style="grid-column:1/-1"><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">📅 Deadline</span>${chipsHtml}${clearHtml}</div>${customHtml}</div>`;})(),
     st:`<label>Status<select id="${prefix}-st" data-f="st">${opt(STATUSES.filter(s=>s!=='Cancel'),f.st,'All')}</select></label>`,
-    type:`<label>Type<select id="${prefix}-type" data-f="type">${opt(TYPES,f.type,'All')}</select></label>`,
+    type:msField(f,'type',TYPES,prefix,'Type'),
     lane:`<label>Lane<select id="${prefix}-lane" data-f="lane">${opt(LANES.map(l=>({v:l.id,t:l.name})),f.lane,'All')}</select></label>`,
-    rev:`<label>Revision Round<select id="${prefix}-rev" data-f="rev">${opt(['0','1','2','3'],f.rev,'All')}</select></label>`,
-    ev:`<label>Evaluator<select id="${prefix}-ev" data-f="ev">${opt(evals,f.ev,'All')}</select></label>`
+    rev:msField(f,'rev',['0','1','2','3'],prefix,'Revision Round'),
+    ev:msField(f,'ev',evals,prefix,'Evaluator')
   };
   return `<div class="filters" data-fset="${prefix}">${keys.map(k=>F[k]).join('')}</div>`;
 }
@@ -552,7 +552,7 @@ function viewBoard(){
     <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="demo-note">Prototype · ข้อมูลสมมุติ</span><button class="btn primary" type="button" id="addCard">+ Add Card</button></div></div>
     ${filterBar(ui.f,['k','lang','sec','pri','asg','type','rev','ev','dl'],'bf')}
     <div class="board-scroll"><div class="board">${lanes}</div></div>
-   `;
+    <p class="rules"><b>Drag Rules:</b> Reporter ลากได้แค่ Review → Correction · Translator ลากได้เฉพาะการ์ดที่ตรงภาษาตัวเองเท่านั้น: To Do → เลนภาษาตัวเอง (เฉพาะการ์ด Ready), ภาษา → Review, Correction → Review (เฉพาะการ์ดภาษาตัวเอง) · Evaluator ลาก Review → Correction และกด "ส่งประเมิน" เพื่อเข้า Assessment · Assessment ไป Done อัตโนมัติเมื่อ Submit แบบประเมิน · Done ลากกลับได้เฉพาะ Admin</p>`;
 }
 
 function viewNotis(){
@@ -743,7 +743,6 @@ function trByLang(lang){
 
 function openForm(c){
   const u=me();const isNew=!c;const nextId='TMS-'+String(S.seq+1).padStart(5,'0');
-  // Default language: Translator uses their lang, others default to EN
   const defaultLang=u.role==='Translator'?u.lang:'EN';
   const v=c||{id:nextId,title:'',status:'TBC',languages:[defaultLang],type:'Document Translation',reporter:u.name,section:u.section[0]||'FLP',reporterEmail:u.email,assignee:'',collaborators:[],evaluator:u.role==='Translator'?'':u.name,note:'',priority:'Normal',deadline:'',link:''};
   const curLang=v.languages[0]||defaultLang;
@@ -770,7 +769,6 @@ function openForm(c){
     <span></span><div class="m-foot" style="margin:0"><button class="btn" type="button" data-close>ยกเลิก</button><button class="btn primary" type="submit">Save</button></div>
   </form></div>`);
 
-  /* ── Custom Dropdown state ── */
   let collabSelected=[...v.collaborators];
   function currentAsg(){return (document.getElementById('fAsg')||{}).value||''}
   function currentLang(){const r=document.querySelector('input[name=lang]:checked');return r?r.value:''}
@@ -798,7 +796,6 @@ function openForm(c){
   });
   updateCollabLabel();
 
-  /* เมื่อเลือก language (radio) → filter Assignee + Collaborator dropdown */
   document.querySelectorAll('input[name=lang]').forEach(rb=>{
     rb.addEventListener('change',()=>{
       const lang=currentLang();
@@ -944,4 +941,4 @@ render();
 })();
 </script>
 </body>
-</html> 
+</html>
