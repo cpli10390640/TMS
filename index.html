@@ -85,6 +85,18 @@ main{min-width:0;padding-block:18px 40px;padding-left:max(20px,env(safe-area-ins
 .filters{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px 14px;margin-bottom:14px}
 .filters label{display:grid;gap:2px;font-size:11px;color:var(--muted);letter-spacing:.03em}
 .filters input,.filters select{padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);font-size:13px;min-width:0}
+.ms-wrap{position:relative}
+.ms-trigger{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-height:33px;padding:4px 8px 4px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);cursor:pointer;font-size:13px;user-select:none;transition:border-color .15s}
+.ms-trigger:hover{border-color:var(--primary)}
+.ms-chip{display:inline-flex;align-items:center;gap:3px;background:var(--primary);color:#fff;border-radius:12px;padding:2px 7px 2px 9px;font-size:11px;font-weight:600;white-space:nowrap;line-height:1.5}
+.ms-chip-x{cursor:pointer;opacity:.75;font-size:13px;line-height:1;padding:0 1px}
+.ms-chip-x:hover{opacity:1}
+.ms-placeholder{color:var(--faint);font-size:13px;padding:2px 1px}
+.ms-panel{display:none;position:absolute;top:calc(100% + 4px);left:0;min-width:100%;max-height:200px;overflow-y:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.14);z-index:300}
+.ms-wrap.open .ms-panel{display:block}
+.ms-row{padding:7px 12px;cursor:pointer;font-size:13px;border-left:3px solid transparent;transition:background .08s}
+.ms-row:hover{background:var(--primary-soft)}
+.ms-row.sel{border-left-color:var(--primary);background:var(--primary-soft);font-weight:600;color:var(--primary)}
 
 .board-scroll{overflow-x:auto;padding-bottom:10px}
 .board{display:grid;grid-template-columns:repeat(8,minmax(214px,1fr));gap:10px;min-width:max-content}
@@ -379,7 +391,7 @@ let S;
 function load(){try{const raw=localStorage.getItem(STORE_KEY);if(raw){S=JSON.parse(raw);if(S&&S.cards&&S.users)return}}catch(e){}S=seed()}
 function save(){try{localStorage.setItem(STORE_KEY,JSON.stringify(S))}catch(e){}}
 load();
-const ui={view:'board',f:{},notiTab:'all',acf:{},uf:{},dashf:{}};
+const ui={view:'board',f:{},notiTab:'all',acf:{},uf:{},dashf:{},msOpen:null};
 try{const v=localStorage.getItem(STORE_KEY+'-view');if(v)ui.view=v}catch(e){}
 
 const me=()=>S.users.find(u=>u.name===S.me)||S.users[0];
@@ -485,21 +497,32 @@ function dlRange(f){
 function filterCards(list,f){
   const k=(f.k||'').trim().toLowerCase();
   const dl=dlRange(f);
+  const ms=(arr,v)=>!arr||!arr.length||arr.includes(v);
   return list.filter(c=>(!k||(c.id+' '+c.title+' '+c.note).toLowerCase().includes(k))
-    &&(!f.lang||c.languages.includes(f.lang))&&(!f.sec||c.section===f.sec)&&(!f.pri||c.priority===f.pri)
-    &&(!f.asg||c.assignee===f.asg||c.collaborators.includes(f.asg))&&(!f.type||c.type===f.type)
-    &&(!f.ev||c.evaluator===f.ev)&&(f.rev===undefined||f.rev===''||String(c.revision||0)===f.rev)
+    &&(!f.lang||!f.lang.length||f.lang.some(l=>c.languages.includes(l)))
+    &&ms(f.sec,c.section)&&ms(f.pri,c.priority)
+    &&(!f.asg||!f.asg.length||f.asg.some(a=>c.assignee===a||c.collaborators.includes(a)))
+    &&ms(f.type,c.type)&&ms(f.ev,c.evaluator)
+    &&(f.rev===undefined||f.rev===''||String(c.revision||0)===f.rev)
+    &&(!f.st||!f.st.length||ms(f.st,c.status))
     &&(!dl.from||!c.deadline||new Date(c.deadline)>=new Date(dl.from))
     &&(!dl.to||!c.deadline||new Date(c.deadline)<=new Date(dl.to+'T23:59:59')))
+}
+function msField(f,fkey,opts,prefix,label){
+  const sel=Array.isArray(f[fkey])?f[fkey]:(f[fkey]?[f[fkey]]:[]);
+  const isOpen=ui.msOpen===`${prefix}-${fkey}`;
+  const chips=sel.map(v=>{const o=opts.find(x=>(x.v||x)===v);const t=o?(o.t||o):v;return`<span class="ms-chip" data-ms-remove="${esc(v)}">${esc(t)}<span class="ms-chip-x" data-ms-remove="${esc(v)}">×</span></span>`;}).join('');
+  const rows=opts.map(o=>{const v=o.v||o;const t=o.t||o;const isSel=sel.includes(v);return`<div class="ms-row${isSel?' sel':''}" data-ms-opt="${esc(v)}" data-ms-fkey="${esc(fkey)}" data-ms-prefix="${esc(prefix)}">${esc(t)}</div>`;}).join('');
+  return`<label>${label}<div class="ms-wrap${isOpen?' open':''}" data-ms-wrap="${esc(prefix)}-${esc(fkey)}"><div class="ms-trigger" data-ms-trigger="${esc(prefix)}-${esc(fkey)}">${chips||'<span class="ms-placeholder">ทั้งหมด</span>'}</div><div class="ms-panel">${rows}</div></div></label>`;
 }
 function filterBar(f,keys,prefix){
   const evals=S.users.filter(u=>u.role!=='Translator').map(u=>u.name);
   const F={
     k:`<label>Keyword<input id="${prefix}-k" data-f="k" value="${esc(f.k||'')}" placeholder="ID หรือชื่องาน"></label>`,
-    lang:`<label>Language<select id="${prefix}-lang" data-f="lang">${opt(LANGS,f.lang,'All')}</select></label>`,
-    sec:`<label>Reporter Section<select id="${prefix}-sec" data-f="sec">${opt(SECTIONS,f.sec,'All')}</select></label>`,
-    pri:`<label>Priority<select id="${prefix}-pri" data-f="pri">${opt(PRIORITIES,f.pri,'All')}</select></label>`,
-    asg:`<label>Assignee<select id="${prefix}-asg" data-f="asg">${opt(translators().map(u=>u.name),f.asg,'All')}</select></label>`,
+    lang:msField(f,'lang',LANGS,prefix,'Language'),
+    sec:msField(f,'sec',SECTIONS,prefix,'Reporter Section'),
+    pri:msField(f,'pri',PRIORITIES,prefix,'Priority'),
+    asg:msField(f,'asg',translators().map(u=>u.name),prefix,'Assignee'),
     dl:(()=>{const AC=f.dl_chip||'';const chips=[{v:'today',l:'วันนี้'},{v:'7d',l:'7 วัน'},{v:'30d',l:'30 วัน'},{v:'month',l:'เดือนนี้'},{v:'overdue',l:'⚠ Overdue'},{v:'custom',l:'📅 กำหนดเอง'}];const chipsHtml=chips.map(c=>`<button type="button" data-dl-chip="${prefix}" data-chip-val="${c.v}" style="padding:4px 11px;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid ${AC===c.v?'var(--primary)':'var(--line-2)'};background:${AC===c.v?'var(--primary)':'var(--surface-2)'};color:${AC===c.v?'#fff':'var(--muted)'};font-family:inherit;white-space:nowrap;transition:.12s">${c.l}</button>`).join('');const clearHtml=AC?`<button type="button" data-dl-clear="${prefix}" style="padding:4px 10px;border:none;background:color-mix(in srgb,var(--neg) 15%,transparent);color:var(--neg);border-radius:16px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit">✕ ล้าง</button>`:'';const customHtml=AC==='custom'?`<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px"><label style="display:grid;gap:3px;font-size:11px;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">ตั้งแต่<input type="date" id="${prefix}-dl_from" data-f="dl_from" value="${esc(f.dl_from||'')}" style="min-width:130px"></label><span style="color:var(--faint);font-size:14px">—</span><label style="display:grid;gap:3px;font-size:11px;color:var(--muted);letter-spacing:.03em;text-transform:uppercase">ถึง<input type="date" id="${prefix}-dl_to" data-f="dl_to" value="${esc(f.dl_to||'')}" style="min-width:130px"></label></div>`:'';return `<div style="grid-column:1/-1"><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap">📅 Deadline</span>${chipsHtml}${clearHtml}</div>${customHtml}</div>`;})(),
     st:`<label>Status<select id="${prefix}-st" data-f="st">${opt(STATUSES.filter(s=>s!=='Cancel'),f.st,'All')}</select></label>`,
     type:`<label>Type<select id="${prefix}-type" data-f="type">${opt(TYPES,f.type,'All')}</select></label>`,
@@ -850,6 +873,37 @@ function bindView(){
   const m=$('#main');
   m.querySelectorAll('[data-fset]').forEach(fs=>{const key={bf:'f',af:'acf',df:'dashf',uf:'uf'}[fs.dataset.fset];
     fs.querySelectorAll('[data-f]').forEach(el=>{el.addEventListener(el.tagName==='INPUT'?'input':'change',()=>{ui[key][el.dataset.f]=el.value;const id=el.id,pos=el.selectionStart;render();const n=document.getElementById(id);if(n){n.focus();if(n.setSelectionRange&&pos!=null)try{n.setSelectionRange(pos,pos)}catch(e){}}})})});
+  // ---- Multi-select Tag Chips ----
+  const fkMapMs={bf:'f',af:'acf',df:'dashf'};
+  m.querySelectorAll('[data-ms-trigger]').forEach(trigger=>{
+    trigger.addEventListener('click',e=>{
+      const removeEl=e.target.closest('[data-ms-remove]');
+      if(removeEl){
+        e.stopPropagation();
+        const wrapKey=trigger.dataset.msTrigger;
+        const parts=wrapKey.split('-');const pfx=parts[0];const fkey=parts.slice(1).join('-');
+        const k=fkMapMs[pfx];if(!k)return;
+        const arr=Array.isArray(ui[k][fkey])?[...ui[k][fkey]]:[];
+        const idx=arr.indexOf(removeEl.dataset.msRemove);
+        if(idx>-1)arr.splice(idx,1);
+        ui[k][fkey]=arr;ui.msOpen=null;render();return;
+      }
+      const wk=trigger.dataset.msTrigger;
+      ui.msOpen=ui.msOpen===wk?null:wk;render();
+    });
+  });
+  m.querySelectorAll('[data-ms-opt]').forEach(row=>{
+    row.addEventListener('click',e=>{
+      e.stopPropagation();
+      const fkey=row.dataset.msFkey;const pfx=row.dataset.msPrefix;
+      const k=fkMapMs[pfx];if(!k)return;
+      const arr=Array.isArray(ui[k][fkey])?[...ui[k][fkey]]:[];
+      const v=row.dataset.msOpt;
+      const idx=arr.indexOf(v);if(idx>-1)arr.splice(idx,1);else arr.push(v);
+      ui[k][fkey]=arr;ui.msOpen=`${pfx}-${fkey}`;render();
+    });
+  });
+  if(!document.__msCloseAttached){document.__msCloseAttached=true;document.addEventListener('click',e=>{if(!e.target.closest('[data-ms-wrap]')&&ui.msOpen){ui.msOpen=null;render();}});}
   m.querySelectorAll('[data-card]').forEach(el=>{el.addEventListener('click',()=>openCard(el.dataset.card));if(el.tagName==='TR')el.addEventListener('keydown',e=>{if(e.key==='Enter')openCard(el.dataset.card)})});
   const add=$('#addCard');if(add)add.onclick=()=>openForm(null);
   const fkMap={bf:'f',af:'acf',df:'dashf'};
@@ -890,4 +944,4 @@ render();
 })();
 </script>
 </body>
-</html>
+</html> แต่อยากให้หน้า board สามารถเลือก filter ที่เป็น dropdown ได้แบบ multi select เธอช่วยทำตัวอย่างมาให้เลือกหน่อย ขอ UI อย่างพึ่งทำ code
